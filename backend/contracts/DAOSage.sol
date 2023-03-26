@@ -20,16 +20,16 @@ contract DAOSage {
     mapping(address => bool) public brainers;
 
     // Define an event to log when a new project is submitted
-    event ProjectSubmitted(address owner, uint id);
+    event ProjectSubmitted(address owner, uint projectId);
 
     // Define an event to log when a vote is submitted
     event VoteSubmitted(address voter, uint projectId, uint8 grade);
 
     // Define an event to log when a project is validated
-    event ProjectValidated(address owner, uint id);
+    event ProjectValidated(address owner, uint projectId);
 
     // Define an event to log when a project is rejected
-    event ProjectRejected(address owner, uint id);
+    event ProjectRejected(address owner, uint projectId);
 
     constructor() {
         admin = msg.sender;

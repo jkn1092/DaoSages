@@ -26,6 +26,18 @@ describe("DAOSage Contract", function () {
             expect(ethers.utils.isAddress(project.escrowWallet)).to.be.true;
         });
 
+
+        it("should emit event ProjectSubmitted", async function () {
+            const projectName = "My Project";
+            const tx = await dao.submitProject(projectName);
+            await tx.wait();
+
+            const events = await dao.queryFilter("ProjectSubmitted", tx.blockHash);
+            expect(events.length).to.equal(1);
+            expect(events[0].args.owner).to.equal(admin.address);
+            expect(events[0].args.projectId).to.equal(1);
+        });
+
         it("should revert if project name is empty", async function () {
             await expect(dao.submitProject("")).to.be.revertedWith("Project name must not be empty.");
         });
@@ -39,6 +51,19 @@ describe("DAOSage Contract", function () {
             await dao.vote(1, 8);
             const projectVote = await dao.projectsVotes(1, admin.address);
             expect(projectVote).to.equal(8);
+        });
+
+        it("should emit event VoteSubmitted", async function () {
+            const projectName = "My Project";
+            await dao.submitProject(projectName);
+            const tx = await dao.vote(1, 8);
+            await tx.wait();
+
+            const events = await dao.queryFilter("VoteSubmitted", tx.blockHash);
+            expect(events.length).to.equal(1);
+            expect(events[0].args.voter).to.equal(admin.address);
+            expect(events[0].args.projectId).to.equal(1);
+            expect(events[0].args.grade).to.equal(8);
         });
 
         it("should revert with invalid project index", async function () {
@@ -60,6 +85,18 @@ describe("DAOSage Contract", function () {
             await dao.validateProject(1);
             const project = await dao.projects(1);
             expect(project.validated).to.equal(true);
+        });
+
+        it("should emit event ProjectValidated", async function () {
+            const projectName = "My Project";
+            await dao.submitProject(projectName);
+            const tx = await dao.validateProject(1);
+            await tx.wait();
+
+            const events = await dao.queryFilter("ProjectValidated", tx.blockHash);
+            expect(events.length).to.equal(1);
+            expect(events[0].args.owner).to.equal(admin.address);
+            expect(events[0].args.projectId).to.equal(1);
         });
 
         it("should revert with invalid project index", async function () {
