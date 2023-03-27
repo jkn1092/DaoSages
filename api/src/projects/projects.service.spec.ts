@@ -36,6 +36,10 @@ describe('Given ProjectsService', () => {
     const createProjectInputMock: CreateProjectInput = {
       daoId: '1',
       name: 'NAME_TEST',
+      token: 'TOKEN_TEST',
+      codeSource: 'CS_TEST',
+      socialMedia: 'SOCIAL_TEST',
+      email: 'MAIL_TEST',
       description: 'DESC_TEST',
     };
 
@@ -64,6 +68,10 @@ describe('Given ProjectsService', () => {
           _id: new mongoose.Types.ObjectId(),
           daoId: 'i'+i,
           name: 'NAME_TEST',
+          token: 'TOKEN_TEST',
+          codeSource: 'CS_TEST',
+          socialMedia: 'SOCIAL_TEST',
+          email: 'MAIL_TEST',
           description: 'DESC_TEST',
         });
         await projectModel.create(mock);
@@ -90,6 +98,10 @@ describe('Given ProjectsService', () => {
         _id: new mongoose.Types.ObjectId(),
         daoId: '1',
         name: 'NAME_TEST',
+        token: 'TOKEN_TEST',
+        codeSource: 'CS_TEST',
+        socialMedia: 'SOCIAL_TEST',
+        email: 'MAIL_TEST',
         description: 'DESC_TEST',
       });
       await projectModel.create(projectMock);

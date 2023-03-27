@@ -1,10 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import {getModelToken} from "@nestjs/mongoose";
 import { ProjectsResolver } from './projects.resolver';
 import { ProjectsService } from './projects.service';
-import {getModelToken} from "@nestjs/mongoose";
 import {Project} from "./entities/project.entity";
 import {ProjectNotFoundException} from "../exceptions/ProjectNotFoundException";
 import {ProjectAlreadyExistsException} from "../exceptions/ProjectAlreadyExistsException";
+import {HttpService} from "@nestjs/axios";
 
 function projectsModelMock(dto: any) {
   this.data = dto;
@@ -16,8 +17,12 @@ function projectsModelMock(dto: any) {
 const projectMock: Project = {
   _id: undefined,
   daoId: '1',
-  name: 'testtest',
-  description: 'test test',
+  name: 'NAME_TEST',
+  token: 'TOKEN_TEST',
+  codeSource: 'CS_TEST',
+  socialMedia: 'SOCIAL_TEST',
+  email: 'MAIL_TEST',
+  description: 'DESC_TEST',
 };
 
 const projectsServiceMock = {
@@ -25,6 +30,10 @@ const projectsServiceMock = {
   findOne: jest.fn(),
   findAll: jest.fn(),
 };
+
+const httpServiceMock = {
+
+}
 
 describe('Given ProjectsResolver', () => {
   let resolver: ProjectsResolver;
@@ -34,8 +43,9 @@ describe('Given ProjectsResolver', () => {
       providers: [
           ProjectsResolver,
         { provide: ProjectsService, useValue: projectsServiceMock },
+        { provide: HttpService, useValue: httpServiceMock },
         {
-          provide: getModelToken('User'),
+          provide: getModelToken('Project'),
           useValue: projectsModelMock,
         },
       ],
@@ -82,14 +92,22 @@ describe('Given ProjectsResolver', () => {
       projectsServiceMock.findAll = jest.fn(() => {
         return [
           {
-            daoId: 't1est',
-            name: 'TestName2',
+            daoId: '1',
+            name: 'TestName1',
             description: 'Test description 1',
+            token: 'TOKEN_TEST1',
+            codeSource: 'CS_TEST1',
+            socialMedia: 'SOCIAL_TEST1',
+            email: 'MAIL_TEST1',
           },
           {
             daoId: '2',
-            name: 'TestName1',
+            name: 'TestName2',
             description: 'Test description 2',
+            token: 'TOKEN_TEST2',
+            codeSource: 'CS_TEST2',
+            socialMedia: 'SOCIAL_TEST2',
+            email: 'MAIL_TEST2',
           },
         ];
       });
@@ -99,14 +117,22 @@ describe('Given ProjectsResolver', () => {
     test('Then it should find all projects', async () => {
       expect(result).toEqual([
         {
-          daoId: 't1est',
-          name: 'TestName2',
+          daoId: '1',
+          name: 'TestName1',
           description: 'Test description 1',
+          token: 'TOKEN_TEST1',
+          codeSource: 'CS_TEST1',
+          socialMedia: 'SOCIAL_TEST1',
+          email: 'MAIL_TEST1',
         },
         {
           daoId: '2',
-          name: 'TestName1',
+          name: 'TestName2',
           description: 'Test description 2',
+          token: 'TOKEN_TEST2',
+          codeSource: 'CS_TEST2',
+          socialMedia: 'SOCIAL_TEST2',
+          email: 'MAIL_TEST2',
         },
       ]);
     });

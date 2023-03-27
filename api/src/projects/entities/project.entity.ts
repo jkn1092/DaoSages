@@ -18,7 +18,23 @@ export class Project {
   name!: string;
 
   @Prop({ required: true })
-  @Field(() => String )
+  @Field(() => String)
+  token!: string;
+
+  @Prop({ required: true })
+  @Field(() => String, { nullable: true })
+  codeSource!: string;
+
+  @Prop({ required: true })
+  @Field(() => String, { nullable: true })
+  socialMedia!: string;
+
+  @Prop({ required: true })
+  @Field(() => String, { nullable: true })
+  email!: string;
+
+  @Prop()
+  @Field(() => String, { nullable: true } )
   description!: string;
 
   @Prop()

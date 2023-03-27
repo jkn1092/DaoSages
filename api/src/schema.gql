@@ -3,9 +3,13 @@
 # ------------------------------------------------------
 
 input CreateProjectInput {
+  codeSource: String!
   daoId: String!
   description: String!
+  email: String!
   name: String!
+  socialMedia: String!
+  token: String!
 }
 
 """
@@ -19,13 +23,18 @@ type Mutation {
 
 type Project {
   _id: String!
+  codeSource: String
   createdAt: DateTime!
   daoId: String!
-  description: String!
+  description: String
+  email: String
   name: String!
+  socialMedia: String
+  token: String!
 }
 
 type Query {
+  coinGecko(daoId: String!): Project!
   project(daoId: String!): Project!
   projects: [Project!]!
 }

@@ -1,3 +1,4 @@
+import {HttpService} from "@nestjs/axios";
 import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
 import { ProjectsService } from './projects.service';
 import { Project } from './entities/project.entity';
@@ -7,7 +8,7 @@ import {ProjectAlreadyExistsException} from "../exceptions/ProjectAlreadyExistsE
 
 @Resolver(() => Project)
 export class ProjectsResolver {
-  constructor(private readonly projectsService: ProjectsService) {}
+  constructor(private readonly projectsService: ProjectsService, private httpService: HttpService) {}
 
   @Mutation(() => Project)
   async createProject(@Args('createProjectInput') createProjectInput: CreateProjectInput) {
@@ -35,5 +36,18 @@ export class ProjectsResolver {
       throw new ProjectNotFoundException('project not found');
     }
     return projectFound;
+  }
+
+  @Query(() => Project, { name: 'coinGecko' })
+  async findCoinGeckoData(@Args('daoId', { type: () => String }) daoId: string) {
+    const projectFound : Project = await this.projectsService.findOne(daoId);
+    const url = 'https://api.coingecko.com/api/v3/coins/'+ projectFound.token;
+
+    try {
+      const response = await this.httpService.get(url).toPromise();
+      return response.data;
+    } catch (error) {
+      throw new ProjectNotFoundException('Unable to fetch data from external API');
+    }
   }
 }

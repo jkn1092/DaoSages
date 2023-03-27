@@ -17,6 +17,10 @@ export class ProjectsService {
     if( project !== null ){
       project.daoId = createProjectInput.daoId;
       project.name = createProjectInput.name;
+      project.token = createProjectInput.token;
+      project.codeSource = createProjectInput.codeSource;
+      project.socialMedia = createProjectInput.socialMedia;
+      project.email = createProjectInput.email;
       project.description = createProjectInput.description;
 
       return project.save();

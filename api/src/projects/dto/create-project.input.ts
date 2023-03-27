@@ -1,5 +1,5 @@
 import { InputType, Field } from '@nestjs/graphql';
-import { MinLength } from 'class-validator';
+import {IsOptional, MinLength} from 'class-validator';
 
 @InputType()
 export class CreateProjectInput {
@@ -11,7 +11,22 @@ export class CreateProjectInput {
   @Field(() => String)
   name: string;
 
-  @MinLength(8)
+  @Field(() => String)
+  token: string;
+
+  @IsOptional()
+  @Field(() => String)
+  codeSource: string;
+
+  @IsOptional()
+  @Field(() => String)
+  socialMedia: string;
+
+  @IsOptional()
+  @Field(() => String)
+  email: string;
+
+  @IsOptional()
   @Field(() => String)
   description: string;
 }
