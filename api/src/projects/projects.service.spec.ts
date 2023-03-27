@@ -5,7 +5,7 @@ import { ProjectsService } from './projects.service';
 import {Project, ProjectDocument, ProjectSchema} from "./entities/project.entity";
 import {ProjectsModule} from "./projects.module";
 import {rootMongooseTestModule} from "./test-db";
-import {Model} from "mongoose";
+import mongoose, {Model} from "mongoose";
 import {CreateProjectInput} from "./dto/create-project.input";
 
 describe('Given ProjectsService', () => {
@@ -34,7 +34,7 @@ describe('Given ProjectsService', () => {
     let result: Project;
 
     const createProjectInputMock: CreateProjectInput = {
-      _id: '1',
+      daoId: '1',
       name: 'NAME_TEST',
       description: 'DESC_TEST',
     };
@@ -44,7 +44,7 @@ describe('Given ProjectsService', () => {
     });
 
     test('It should return a new project', () => {
-      expect(result._id).toEqual(createProjectInputMock._id);
+      expect(result.daoId).toEqual(createProjectInputMock.daoId);
       expect(result.name).toEqual(createProjectInputMock.name);
       expect(result.description).toEqual(createProjectInputMock.description);
     });
@@ -61,7 +61,8 @@ describe('Given ProjectsService', () => {
       let mock;
       for (let i = 0; i < 4; i++) {
         mock = projectFactory.generate({
-          _id: 'i'+i,
+          _id: new mongoose.Types.ObjectId(),
+          daoId: 'i'+i,
           name: 'NAME_TEST',
           description: 'DESC_TEST',
         });
@@ -86,7 +87,8 @@ describe('Given ProjectsService', () => {
 
     beforeEach(async () => {
       projectMock = projectFactory.generate({
-        _id: '1',
+        _id: new mongoose.Types.ObjectId(),
+        daoId: '1',
         name: 'NAME_TEST',
         description: 'DESC_TEST',
       });
@@ -96,6 +98,7 @@ describe('Given ProjectsService', () => {
 
     test('It should return a project', () => {
       expect(result._id).toEqual(projectMock._id);
+      expect(result.daoId).toEqual(projectMock.daoId);
       expect(result.name).toEqual(projectMock.name);
       expect(result.description).toEqual(projectMock.description);
     });

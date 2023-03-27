@@ -15,7 +15,7 @@ export class ProjectsService {
     const project: ProjectDocument = new this.projectModel();
 
     if( project !== null ){
-      project._id = createProjectInput._id;
+      project.daoId = createProjectInput.daoId;
       project.name = createProjectInput.name;
       project.description = createProjectInput.description;
 
@@ -29,7 +29,7 @@ export class ProjectsService {
     return this.projectModel.find({});
   }
 
-  async findOne(_id: string): Promise<Project> {
-    return this.projectModel.findById(_id);
+  async findOne(daoId: string): Promise<Project> {
+    return this.projectModel.findOne({ daoId: daoId });
   }
 }

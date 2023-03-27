@@ -12,7 +12,7 @@ export class ProjectsResolver {
   @Mutation(() => Project)
   async createProject(@Args('createProjectInput') createProjectInput: CreateProjectInput) {
     const user: Project = await this.projectsService.findOne(
-        createProjectInput._id,
+        createProjectInput.daoId,
     );
     if (user) {
       throw new ProjectAlreadyExistsException(
@@ -29,8 +29,8 @@ export class ProjectsResolver {
   }
 
   @Query(() => Project, { name: 'project' })
-  async findOne(@Args('_id', { type: () => String }) id: string) {
-    const projectFound : Project = await this.projectsService.findOne(id);
+  async findOne(@Args('daoId', { type: () => String }) daoId: string) {
+    const projectFound : Project = await this.projectsService.findOne(daoId);
     if (projectFound === null) {
       throw new ProjectNotFoundException('project not found');
     }

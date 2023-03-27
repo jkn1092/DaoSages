@@ -5,7 +5,7 @@ import { MinLength } from 'class-validator';
 export class CreateProjectInput {
 
   @Field(() => String)
-  _id: string;
+  daoId: string;
 
   @MinLength(8)
   @Field(() => String)

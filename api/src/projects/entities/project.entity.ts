@@ -1,13 +1,17 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from "mongoose";
+import {HydratedDocument, Types} from "mongoose";
 import { ObjectType, Field } from '@nestjs/graphql';
 
 @ObjectType()
 @Schema({ timestamps: true })
 export class Project {
+
+  @Field(() => String)
+  _id: Types.ObjectId;
+
   @Prop({ unique: true, required: true })
   @Field(() => String)
-  _id!: string;
+  daoId!: string;
 
   @Prop({ required: true })
   @Field(() => String)

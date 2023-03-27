@@ -14,7 +14,8 @@ function projectsModelMock(dto: any) {
 }
 
 const projectMock: Project = {
-  _id: '1',
+  _id: undefined,
+  daoId: '1',
   name: 'testtest',
   description: 'test test',
 };
@@ -81,12 +82,12 @@ describe('Given ProjectsResolver', () => {
       projectsServiceMock.findAll = jest.fn(() => {
         return [
           {
-            _id: 't1est',
+            daoId: 't1est',
             name: 'TestName2',
             description: 'Test description 1',
           },
           {
-            _id: '2',
+            daoId: '2',
             name: 'TestName1',
             description: 'Test description 2',
           },
@@ -98,12 +99,12 @@ describe('Given ProjectsResolver', () => {
     test('Then it should find all projects', async () => {
       expect(result).toEqual([
         {
-          _id: 't1est',
+          daoId: 't1est',
           name: 'TestName2',
           description: 'Test description 1',
         },
         {
-          _id: '2',
+          daoId: '2',
           name: 'TestName1',
           description: 'Test description 2',
         },
