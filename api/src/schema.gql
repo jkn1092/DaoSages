@@ -3,7 +3,7 @@
 # ------------------------------------------------------
 
 input CreateProjectInput {
-  _id: String!
+  daoId: String!
   description: String!
   name: String!
 }
@@ -20,11 +20,12 @@ type Mutation {
 type Project {
   _id: String!
   createdAt: DateTime!
+  daoId: String!
   description: String!
   name: String!
 }
 
 type Query {
-  project(_id: String!): Project!
+  project(daoId: String!): Project!
   projects: [Project!]!
 }
