@@ -22,6 +22,11 @@ export default function submitProject() {
     const toast = useToast();
 
     const [name, setName] = useState(null);
+    const [token, setToken] = useState(null);
+    const [codeSource, setCodeSource] = useState(null);
+    const [socialMedia, setSocialMedia] = useState(null);
+    const [email, setEmail] = useState(null);
+    const [description, setDescription] = useState(null);
     const [submitProject, submitProjectResult] = useMutation(
         REQUEST.MUTATION.PROJECT.SUBMIT_PROJECT,
     );
@@ -30,7 +35,7 @@ export default function submitProject() {
         try {
             const contract = new ethers.Contract(contractAddress, abi, signer)
             let transaction = await contract.submitProject(name);
-            const receipt = await transaction.wait()
+            const receipt = await transaction.wait();
             console.log(receipt);
             const daoId = ethers.BigNumber.from(receipt.events[0].args.projectId).toNumber();
 
@@ -38,11 +43,11 @@ export default function submitProject() {
                 variables: {
                     daoId: daoId.toString(),
                     name: name,
-                    token: 'test',
-                    codeSource: 'test',
-                    socialMedia: 'test',
-                    email: 'test',
-                    description: 'test'
+                    token: token,
+                    codeSource: codeSource,
+                    socialMedia: socialMedia,
+                    email: email,
+                    description: description
                 },
             });
 
@@ -112,6 +117,7 @@ export default function submitProject() {
                             placeholder="Token"
                             _placeholder={{ color: 'gray.500' }}
                             type="text"
+                            onChange={(e) => setToken(e.target.value)}
                         />
                     </FormControl>
                     <FormControl id="email">
@@ -120,6 +126,7 @@ export default function submitProject() {
                             placeholder="your-email@example.com"
                             _placeholder={{ color: 'gray.500' }}
                             type="email"
+                            onChange={(e) => setEmail(e.target.value)}
                         />
                     </FormControl>
                     <FormControl id="socialMedia">
@@ -128,6 +135,7 @@ export default function submitProject() {
                             placeholder="@dao..."
                             _placeholder={{ color: 'gray.500' }}
                             type="text"
+                            onChange={(e) => setSocialMedia(e.target.value)}
                         />
                     </FormControl>
                     <FormControl id="codeSource">
@@ -136,6 +144,7 @@ export default function submitProject() {
                             placeholder="Github..."
                             _placeholder={{ color: 'gray.500' }}
                             type="text"
+                            onChange={(e) => setCodeSource(e.target.value)}
                         />
                     </FormControl>
                     <FormControl id="description">
@@ -144,6 +153,7 @@ export default function submitProject() {
                             placeholder="Description"
                             _placeholder={{ color: 'gray.500' }}
                             type="text"
+                            onChange={(e) => setDescription(e.target.value)}
                         />
                     </FormControl>
                     <Stack spacing={6} direction={['column', 'row']}>

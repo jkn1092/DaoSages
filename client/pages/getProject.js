@@ -1,4 +1,4 @@
-import Layout from "@/components/Layout/Layout";
+import {useEffect, useState} from "react";
 import {
     Heading,
     Spinner,
@@ -16,15 +16,26 @@ import {
     NumberInputField,
     NumberIncrementStepper,
     NumberDecrementStepper,
-    NumberInputStepper, Button
+    NumberInputStepper, Button, useToast
 } from "@chakra-ui/react";
 import { useSearchParams } from 'next/navigation'
 import {REQUEST} from "@/services/graphql";
 import {useQuery} from "@apollo/client";
+import {useAccount, useProvider, useSigner} from "wagmi";
+import {ethers} from "ethers";
+import {abi, contractAddress} from "@/constants";
+import Layout from "@/components/Layout/Layout";
 
 export default function getProject() {
     const searchParams = useSearchParams();
     let projectId = searchParams.get('id');
+    const { data: signer } = useSigner();
+
+    const { address, isConnected } = useAccount();
+    const provider = useProvider()
+
+    const toast = useToast();
+    const [audit, setAudit] = useState();
 
     const getProjectResult = useQuery(REQUEST.QUERY.PROJECT.GET_PROJECT_ID,{
         variables: {
@@ -33,6 +44,64 @@ export default function getProject() {
     });
 
     const projectFetched = getProjectResult?.data?.project || null;
+
+    const submitAudit = async() => {
+        try {
+            const contract = new ethers.Contract(contractAddress, abi, signer);
+            let transaction = await contract.vote(projectId, audit);
+            transaction.wait();
+
+            toast({
+                title: 'Congratulations',
+                description: "Your vote has been submitted !",
+                status: 'success',
+                duration: 9000,
+                isClosable: true,
+            })
+        }
+        catch(e) {
+            toast({
+                title: 'Error',
+                description: "An error occured.",
+                status: 'error',
+                duration: 9000,
+                isClosable: true,
+            })
+            console.log(e)
+        }
+    }
+
+    useEffect(() => {
+        (async function() {
+            const contract = new ethers.Contract(contractAddress, abi, provider);
+            let eventFilter = contract.filters.VoteSubmitted();
+            let events = await contract.queryFilter(eventFilter);
+
+            let grade = audit;
+            events.forEach(event => {
+                const daoId = ethers.BigNumber.from(event.args.projectId).toNumber();
+                if( daoId === parseInt(projectId) ){
+                    grade = event.args.grade;
+                }
+            });
+            setAudit(grade);;
+        })();
+    },[projectId])
+
+    const AuditInput = () => {
+        if( projectId !== null )
+        {
+            return(
+                <NumberInput defaultValue={audit} min={0} max={10} onChange={(value) => setAudit(value)}>
+                    <NumberInputField/>
+                    <NumberInputStepper>
+                        <NumberIncrementStepper />
+                        <NumberDecrementStepper />
+                    </NumberInputStepper>
+                </NumberInput>
+            )
+        }
+    }
 
     return(
         <Layout>
@@ -96,15 +165,9 @@ export default function getProject() {
                                         </ListItem>
                                     </List>
                                 </Box>
-                                <NumberInput defaultValue={5} min={0} max={10}>
-                                    <NumberInputField />
-                                    <NumberInputStepper>
-                                        <NumberIncrementStepper />
-                                        <NumberDecrementStepper />
-                                    </NumberInputStepper>
-                                </NumberInput>
-                                <Button colorScheme='teal' size='md'>
-                                    Vote
+                                <AuditInput/>
+                                <Button colorScheme='teal' size='md' onClick={() => submitAudit()}>
+                                    Audit
                                 </Button>
                             </Stack>
                         </SimpleGrid>
