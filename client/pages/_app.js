@@ -6,6 +6,8 @@ import { hardhat } from 'wagmi/chains';
 import { publicProvider } from 'wagmi/providers/public';
 import {getDefaultWallets , RainbowKitProvider} from "@rainbow-me/rainbowkit";
 import { ChakraProvider } from '@chakra-ui/react'
+import {ApolloProvider} from "@apollo/client";
+import client from "@/apollo-client";
 
 const { chains, provider } = configureChains(
     [hardhat],
@@ -21,7 +23,7 @@ const { connectors } = getDefaultWallets({
 });
 
 const wagmiClient = createClient({
-  autoConnect: false,
+  autoConnect: true,
   connectors,
   provider
 })
@@ -31,7 +33,9 @@ export default function App({ Component, pageProps }) {
       <ChakraProvider>
           <WagmiConfig client={wagmiClient}>
             <RainbowKitProvider chains={chains}>
-              <Component {...pageProps} />
+                <ApolloProvider client={client}>
+                    <Component {...pageProps} />
+                </ApolloProvider>
             </RainbowKitProvider>
           </WagmiConfig>
       </ChakraProvider>

@@ -2,6 +2,7 @@ import Head from 'next/head'
 import {useAccount} from "wagmi";
 import Layout from "@/components/Layout/Layout";
 import {Alert, AlertIcon, Text} from "@chakra-ui/react";
+import ListProjects from "@/components/Project/ListProjects";
 
 export default function Home() {
 
@@ -17,7 +18,7 @@ export default function Home() {
       </Head>
       <Layout>
         {isConnected ? (
-            <Text>Welcome on Alyra DApp !</Text>
+            <ListProjects/>
         ) : (
             <Alert status='warning' width="50%">
               <AlertIcon />

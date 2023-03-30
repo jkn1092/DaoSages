@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0
+
 pragma solidity ^0.8.18;
 
 import "./Escrow.sol";
@@ -20,7 +22,7 @@ contract DAOSage {
     mapping(address => bool) public brainers;
 
     // Define an event to log when a new project is submitted
-    event ProjectSubmitted(address owner, uint projectId);
+    event ProjectSubmitted(address owner, uint projectId, string projectName);
 
     // Define an event to log when a vote is submitted
     event VoteSubmitted(address voter, uint projectId, uint8 grade);
@@ -47,7 +49,7 @@ contract DAOSage {
         newProject.escrowWallet = address(newEscrow);
         projects[projectCount] = newProject;
 
-        emit ProjectSubmitted(msg.sender, projectCount);
+        emit ProjectSubmitted(msg.sender, projectCount, _name);
     }
 
     function vote(uint256 _index, uint8 _grade) public {
