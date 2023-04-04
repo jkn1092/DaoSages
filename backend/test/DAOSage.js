@@ -279,12 +279,38 @@ describe("DAOSage Contract", function () {
             expect(result.isWise).to.equal(false);
         });
 
+        it("should return finder tokenURI", async function () {
+            await dao.connect(visitor).mintFinder(visitor.address);
+            const result = await dao.connect(visitor).tokenFinderURI();
+            expect(result).to.be.not.undefined;
+        });
+
         it("should find a brainer nft in visitor", async function () {
             await dao.connect(visitor).mintBrainer(visitor.address);
             const result = await dao.connect(visitor).getRoles();
             expect(result.isFinder).to.equal(false);
             expect(result.isBrainer).to.equal(true);
             expect(result.isWise).to.equal(false);
+        });
+
+        it("should return brainer tokenURI", async function () {
+            await dao.connect(visitor).mintBrainer(visitor.address);
+            const result = await dao.connect(visitor).tokenBrainerURI();
+            expect(result).to.be.not.undefined;
+        });
+
+        it("should find a wisemen nft in visitor", async function () {
+            await dao.connect(admin).mintWisemen(visitor.address);
+            const result = await dao.connect(visitor).getRoles();
+            expect(result.isFinder).to.equal(false);
+            expect(result.isBrainer).to.equal(false);
+            expect(result.isWise).to.equal(true);
+        });
+
+        it("should return wisemen tokenURI", async function () {
+            await dao.connect(admin).mintWisemen(visitor.address);
+            const result = await dao.connect(visitor).tokenWiseURI();
+            expect(result).to.be.not.undefined;
         });
     })
 });

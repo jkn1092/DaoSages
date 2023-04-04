@@ -8,7 +8,6 @@ import {getDefaultWallets , RainbowKitProvider} from "@rainbow-me/rainbowkit";
 import { ChakraProvider } from '@chakra-ui/react'
 import {ApolloProvider} from "@apollo/client";
 import client from "@/apollo-client";
-import {createContext} from "react";
 
 const { chains, provider } = configureChains(
     [hardhat],
@@ -24,10 +23,15 @@ const { connectors } = getDefaultWallets({
 });
 
 const wagmiClient = createClient({
-  autoConnect: true,
-  connectors,
-  provider
+    autoConnect: true,
+    connectors,
+    provider,
+/*    isFinder : false,
+    isBrainer : false,
+    isWise : false*/
 })
+
+
 
 export default function App({ Component, pageProps }) {
   return(

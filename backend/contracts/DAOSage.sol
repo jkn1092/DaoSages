@@ -171,7 +171,7 @@ contract DAOSage is Ownable, ERC721URIStorage {
         _tokenIds.increment();
         uint newItemId = _tokenIds.current();
         _mint(_to, newItemId);
-        _setTokenURI(newItemId, "https://gateway.pinata.cloud/ipfs/QmPAZCi2WSKkG8kn5cDzK6Z8cUP19szPhU4nN44Ta9uUN6/finder.json");
+        _setTokenURI(newItemId, "https://gateway.pinata.cloud/ipfs/QmcTho9sZmAASyihTcKV2bkX4mrnDeyKTBHnYhM8tgpW7X/finder.json");
         participants[_to].tokenFinder = newItemId;
         registeredAddress.push(_to);
     }
@@ -182,7 +182,7 @@ contract DAOSage is Ownable, ERC721URIStorage {
         _tokenIds.increment();
         uint newItemId = _tokenIds.current();
         _mint(_to, newItemId);
-        _setTokenURI(newItemId, "https://gateway.pinata.cloud/ipfs/QmPAZCi2WSKkG8kn5cDzK6Z8cUP19szPhU4nN44Ta9uUN6/brainer.json");
+        _setTokenURI(newItemId, "https://gateway.pinata.cloud/ipfs/QmcTho9sZmAASyihTcKV2bkX4mrnDeyKTBHnYhM8tgpW7X/brainer.json");
         participants[_to].tokenBrainer = newItemId;
         registeredAddress.push(_to);
     }
@@ -193,7 +193,7 @@ contract DAOSage is Ownable, ERC721URIStorage {
         _tokenIds.increment();
         uint newItemId = _tokenIds.current();
         _mint(_to, newItemId);
-        _setTokenURI(newItemId, "https://gateway.pinata.cloud/ipfs/QmPAZCi2WSKkG8kn5cDzK6Z8cUP19szPhU4nN44Ta9uUN6/wise.json");
+        _setTokenURI(newItemId, "https://gateway.pinata.cloud/ipfs/QmcTho9sZmAASyihTcKV2bkX4mrnDeyKTBHnYhM8tgpW7X/wise.json");
         participants[_to].tokenWisemen = newItemId;
         registeredAddress.push(_to);
     }
@@ -211,6 +211,21 @@ contract DAOSage is Ownable, ERC721URIStorage {
 
         if(_exists(tokenWisemen) && _ownerOf(tokenWisemen) == msg.sender)
             isWise = true;
+    }
+
+    function tokenFinderURI() public view returns(string memory) {
+        require(_exists(participants[msg.sender].tokenFinder), 'Finder not mint');
+        return tokenURI(participants[msg.sender].tokenFinder);
+    }
+
+    function tokenBrainerURI() public view returns(string memory) {
+        require(_exists(participants[msg.sender].tokenBrainer), 'Brainer not mint');
+        return tokenURI(participants[msg.sender].tokenBrainer);
+    }
+
+    function tokenWiseURI() public view returns(string memory) {
+        require(_exists(participants[msg.sender].tokenWisemen), 'Wise not mint');
+        return tokenURI(participants[msg.sender].tokenWisemen);
     }
 }
 

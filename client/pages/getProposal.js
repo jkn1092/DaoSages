@@ -14,7 +14,7 @@ import {
     Textarea,
     useColorModeValue, useToast
 } from "@chakra-ui/react";
-import {useAccount, useProvider, useSigner} from "wagmi";
+import {useAccount, useProvider, useQueryClient, useSigner} from "wagmi";
 import {useEffect, useState} from "react";
 
 
@@ -33,6 +33,7 @@ export default function getProposal() {
         try {
             const contract = new ethers.Contract(contractAddress, abi, signer)
             await contract.withdrawVote(proposalId);
+            setVoted(false);
 
             toast({
                 title: 'Congratulations',
@@ -57,6 +58,7 @@ export default function getProposal() {
         try {
             const contract = new ethers.Contract(contractAddress, abi, signer)
             await contract.submitVote(proposalId);
+            setVoted(true);
 
             toast({
                 title: 'Congratulations',
@@ -156,7 +158,7 @@ export default function getProposal() {
                                             </Text>{' '}
                                             {proposal?.owner}
                                         </ListItem>
-                                        { proposal?.validate ?
+                                        { proposal?.validated ?
                                             (
                                                 <ListItem>
                                                     <Text as={'span'} fontWeight={'bold'}>
