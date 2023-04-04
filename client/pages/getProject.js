@@ -29,12 +29,12 @@ import Layout from "@/components/Layout/Layout";
 export default function getProject() {
     const searchParams = useSearchParams();
     let projectId = searchParams.get('id');
-    const { data: signer } = useSigner();
 
-    const { address, isConnected } = useAccount();
     const provider = useProvider()
-
+    const { data: signer } = useSigner();
+    const { address } = useAccount();
     const toast = useToast();
+    const [daoAudit, setDaoAudit] = useState();
     const [audit, setAudit] = useState();
 
     const getProjectResult = useQuery(REQUEST.QUERY.PROJECT.GET_PROJECT_ID,{
@@ -48,7 +48,7 @@ export default function getProject() {
     const submitAudit = async() => {
         try {
             const contract = new ethers.Contract(contractAddress, abi, signer);
-            let transaction = await contract.vote(projectId, audit);
+            let transaction = await contract.auditProject(projectId, audit);
             transaction.wait();
 
             toast({
@@ -73,18 +73,21 @@ export default function getProject() {
 
     useEffect(() => {
         (async function() {
-            const contract = new ethers.Contract(contractAddress, abi, provider);
-            let eventFilter = contract.filters.VoteSubmitted();
-            let events = await contract.queryFilter(eventFilter);
-
-            let grade = audit;
-            events.forEach(event => {
-                const daoId = ethers.BigNumber.from(event.args.projectId).toNumber();
-                if( daoId === parseInt(projectId) ){
+            if( projectId !== null )
+            {
+                let grade;
+                const contract = new ethers.Contract(contractAddress, abi, provider);
+                let eventFilter = contract.filters.AuditSubmitted(address, projectId);
+                let events = await contract.queryFilter(eventFilter);
+                events.forEach(event => {
                     grade = event.args.grade;
-                }
-            });
-            setAudit(grade);;
+                });
+                setAudit(grade);
+
+                const result = await contract.getAudit(projectId);
+                setDaoAudit(ethers.BigNumber.from(result).toNumber());
+            }
+
         })();
     },[projectId])
 
@@ -162,6 +165,12 @@ export default function getProject() {
                                                 Email:
                                             </Text>{' '}
                                             {projectFetched?.email}
+                                        </ListItem>
+                                        <ListItem>
+                                            <Text as={'span'} fontWeight={'bold'}>
+                                                DAO Audit:
+                                            </Text>{' '}
+                                            {daoAudit}
                                         </ListItem>
                                     </List>
                                 </Box>

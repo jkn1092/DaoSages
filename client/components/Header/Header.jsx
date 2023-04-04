@@ -12,6 +12,8 @@ const Header = () => {
             <Flex width="30%" justifyContent="space-between" alignItems="center">
                 <Text><Link href="/">Home</Link></Text>
                 <Text><Link href="/submitProject">Submit Project</Link></Text>
+                <Text><Link href="/getProposals">Proposals</Link></Text>
+                <Text><Link href="/submitProposal">Submit Proposal</Link></Text>
             </Flex>
             <ConnectButton/>
         </Flex>

@@ -20,14 +20,14 @@ const ListProjects = () => {
 
     useEffect(() => {
         (async function() {
-                let eventFilter = contract.filters['ProjectSubmitted'];
+                let eventFilter = contract.filters.ProjectSubmitted();
                 let events = await contract.queryFilter(eventFilter);
 
                 let eventsArray = [];
 
                 events.forEach(event => {
-                    const daoId = ethers.BigNumber.from(event.args.projectId).toNumber();
-                    eventsArray.push({'projectId': daoId, 'name': event.args.projectName, 'owner': event.args.owner})
+                    const daoId = ethers.BigNumber.from(event.args.id).toNumber();
+                    eventsArray.push({'projectId': daoId, 'name': event.args.name, 'owner': event.args.owner})
                 });
 
                 setProjects(eventsArray);

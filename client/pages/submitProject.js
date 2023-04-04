@@ -17,7 +17,6 @@ import {contractAddress, abi} from "@/constants";
 import {REQUEST} from "@/services/graphql";
 
 export default function submitProject() {
-    const { address, isConnected } = useAccount();
     const { data: signer } = useSigner();
     const toast = useToast();
 
@@ -36,8 +35,7 @@ export default function submitProject() {
             const contract = new ethers.Contract(contractAddress, abi, signer)
             let transaction = await contract.submitProject(name);
             const receipt = await transaction.wait();
-            console.log(receipt);
-            const daoId = ethers.BigNumber.from(receipt.events[0].args.projectId).toNumber();
+            const daoId = ethers.BigNumber.from(receipt.events[0].args.id).toNumber();
 
             await submitProject({
                 variables: {
@@ -80,7 +78,6 @@ export default function submitProject() {
                 duration: 9000,
                 isClosable: true,
             })
-            console.log(e)
         }
     }
 

@@ -8,6 +8,7 @@ import {getDefaultWallets , RainbowKitProvider} from "@rainbow-me/rainbowkit";
 import { ChakraProvider } from '@chakra-ui/react'
 import {ApolloProvider} from "@apollo/client";
 import client from "@/apollo-client";
+import {createContext} from "react";
 
 const { chains, provider } = configureChains(
     [hardhat],
