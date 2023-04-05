@@ -36,6 +36,15 @@ describe("DAOSage Contract", function () {
                 const result = await dao.connect(visitor).tokenFinderURI();
                 expect(result).to.be.not.undefined;
             });
+
+            it("should update contract balance", async function () {
+                const balance = await ethers.provider.getBalance(dao.address);
+                const cost = ethers.utils.parseEther("0.01");
+                await dao.connect(visitor).mintFinder(visitor.address, {value: cost});
+                const newBalance = await ethers.provider.getBalance(dao.address);
+                const expectedBalance = balance.add(ethers.utils.parseEther("0.01"));
+                expect(newBalance).to.equal(expectedBalance);
+            });
         })
 
         describe("mint finder as finder", function () {
@@ -72,6 +81,15 @@ describe("DAOSage Contract", function () {
                 await dao.connect(visitor).mintBrainer(visitor.address, {value: cost});
                 const result = await dao.connect(visitor).tokenBrainerURI();
                 expect(result).to.be.not.undefined;
+            });
+
+            it("should update contract balance with brainer mint", async function () {
+                const balance = await ethers.provider.getBalance(dao.address);
+                const cost = ethers.utils.parseEther("0.02");
+                await dao.connect(visitor).mintBrainer(visitor.address, {value: cost});
+                const newBalance = await ethers.provider.getBalance(dao.address);
+                const expectedBalance = balance.add(ethers.utils.parseEther("0.02"));
+                expect(newBalance).to.equal(expectedBalance);
             });
         })
 
