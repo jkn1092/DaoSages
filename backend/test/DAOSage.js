@@ -2,7 +2,7 @@ const { expect } = require("chai");
 const { ethers } = require("hardhat");
 
 describe("DAOSage Contract", function () {
-    let dao, admin, wise, brainer, finder, visitor
+    let dao, daoGovernance, admin, wise, brainer, finder, visitor;
 
     // Deploy the contract before each test
     beforeEach(async function () {
@@ -10,6 +10,10 @@ describe("DAOSage Contract", function () {
         const DAOSage = await ethers.getContractFactory("DAOSage");
         dao = await DAOSage.deploy();
         await dao.deployed();
+
+        const DAOSageGovernance = await ethers.getContractFactory("DAOSageGovernance");
+        daoGovernance = await DAOSageGovernance.deploy(dao.address);
+        await daoGovernance.deployed();
 
         dao.mintWisemen(wise.address);
         dao.mintBrainer(brainer.address, {value: ethers.utils.parseEther("0.02")});
@@ -283,8 +287,8 @@ describe("DAOSage Contract", function () {
             it("should add proposal in proposals array", async function () {
                 const proposalName = "Proposal A";
                 const proposalDesc = "Desc A";
-                await dao.submitProposal(proposalName, proposalDesc);
-                const proposal = await dao.proposals(0);
+                await daoGovernance.submitProposal(proposalName, proposalDesc);
+                const proposal = await daoGovernance.proposals(0);
                 expect(proposal.name).to.equal(proposalName);
                 expect(proposal.description).to.equal(proposalDesc);
                 expect(proposal.validated).to.equal(false);
@@ -293,10 +297,10 @@ describe("DAOSage Contract", function () {
             it("should emit event ProjectSubmitted", async function () {
                 const proposalName = "Proposal A";
                 const proposalDesc = "Desc A";
-                const tx = await dao.submitProposal(proposalName, proposalDesc);
+                const tx = await daoGovernance.submitProposal(proposalName, proposalDesc);
                 await tx.wait();
 
-                const events = await dao.queryFilter("ProposalSubmitted", tx.blockHash);
+                const events = await daoGovernance.queryFilter("ProposalSubmitted", tx.blockHash);
                 expect(events.length).to.equal(1);
                 expect(events[0].args.id).to.equal(0);
             });
@@ -304,19 +308,19 @@ describe("DAOSage Contract", function () {
 
         describe("submit new proposal with empty name", function () {
             it("should revert if project name is empty", async function () {
-                await expect(dao.submitProposal("","Test")).to.be.revertedWith("Proposal name and description must not be empty.");
+                await expect(daoGovernance.submitProposal("","Test")).to.be.revertedWith("Proposal name and description must not be empty.");
             });
         })
 
         describe("submit new proposal with empty description", function () {
             it("should revert if project description is empty", async function () {
-                await expect(dao.submitProposal("Test","")).to.be.revertedWith("Proposal name and description must not be empty.");
+                await expect(daoGovernance.submitProposal("Test","")).to.be.revertedWith("Proposal name and description must not be empty.");
             });
         });
 
         describe("submit new proposal as visitor", function () {
             it("should revert with not participant", async function () {
-                await expect(dao.connect(visitor).submitProposal("Test","test")).to.be.revertedWith("Not participant");
+                await expect(daoGovernance.connect(visitor).submitProposal("Test","test")).to.be.revertedWith("Not participant");
             });
         });
 
@@ -324,9 +328,9 @@ describe("DAOSage Contract", function () {
             it("should return proposal", async function () {
                 const proposalName = "Proposal A";
                 const proposalDesc = "Desc A";
-                await dao.submitProposal(proposalName, proposalDesc);
+                await daoGovernance.submitProposal(proposalName, proposalDesc);
 
-                const proposal = await dao.getProposal(0);
+                const proposal = await daoGovernance.getProposal(0);
                 expect(proposal.name).to.equal(proposalName);
                 expect(proposal.description).to.equal(proposalDesc);
                 expect(proposal.validated).to.equal(false);
@@ -335,7 +339,7 @@ describe("DAOSage Contract", function () {
 
         describe("get non existing proposal", function () {
             it("should revert with not found", async function () {
-                await expect(dao.getProposal(0)).to.be.revertedWith("Proposal not found");
+                await expect(daoGovernance.getProposal(0)).to.be.revertedWith("Proposal not found");
             });
         });
 
@@ -347,20 +351,20 @@ describe("DAOSage Contract", function () {
             it("should increase voteCount to 4", async function () {
                 const proposalName = "Proposal A";
                 const proposalDesc = "Desc A";
-                await dao.submitProposal(proposalName, proposalDesc);
-                await dao.submitVote(0);
-                const proposal = await dao.proposals(0);
+                await daoGovernance.submitProposal(proposalName, proposalDesc);
+                await daoGovernance.submitVote(0);
+                const proposal = await daoGovernance.proposals(0);
                 expect(proposal.voteCount).to.equal(4);
             });
 
             it("should emit event VoteSubmitted with true", async function () {
                 const proposalName = "Proposal A";
                 const proposalDesc = "Desc A";
-                await dao.submitProposal(proposalName, proposalDesc);
-                const tx = await dao.submitVote(0);
+                await daoGovernance.submitProposal(proposalName, proposalDesc);
+                const tx = await daoGovernance.submitVote(0);
                 await tx.wait();
 
-                const events = await dao.queryFilter("VoteSubmitted", tx.blockHash);
+                const events = await daoGovernance.queryFilter("VoteSubmitted", tx.blockHash);
                 expect(events.length).to.equal(1);
                 expect(events[0].args.voter).to.equal(admin.address);
                 expect(events[0].args.id).to.equal(0);
@@ -370,11 +374,11 @@ describe("DAOSage Contract", function () {
             it("should not emit event ProposalValidated", async function () {
                 const proposalName = "Proposal A";
                 const proposalDesc = "Desc A";
-                await dao.connect(finder).submitProposal(proposalName, proposalDesc);
-                const tx = await dao.connect(finder).submitVote(0);
+                await daoGovernance.connect(finder).submitProposal(proposalName, proposalDesc);
+                const tx = await daoGovernance.connect(finder).submitVote(0);
                 await tx.wait();
 
-                const events = await dao.queryFilter("ProposalValidated", tx.blockHash);
+                const events = await daoGovernance.queryFilter("ProposalValidated", tx.blockHash);
                 expect(events.length).to.equal(0);
             });
         });
@@ -383,9 +387,9 @@ describe("DAOSage Contract", function () {
             it("should increase voteCount to 1", async function () {
                 const proposalName = "Proposal A";
                 const proposalDesc = "Desc A";
-                await dao.submitProposal(proposalName, proposalDesc);
-                await dao.connect(finder).submitVote(0);
-                const proposal = await dao.proposals(0);
+                await daoGovernance.submitProposal(proposalName, proposalDesc);
+                await daoGovernance.connect(finder).submitVote(0);
+                const proposal = await daoGovernance.proposals(0);
                 expect(proposal.voteCount).to.equal(1);
             });
         })
@@ -394,9 +398,9 @@ describe("DAOSage Contract", function () {
             it("should increase voteCount to 1", async function () {
                 const proposalName = "Proposal A";
                 const proposalDesc = "Desc A";
-                await dao.submitProposal(proposalName, proposalDesc);
-                await dao.connect(brainer).submitVote(0);
-                const proposal = await dao.proposals(0);
+                await daoGovernance.submitProposal(proposalName, proposalDesc);
+                await daoGovernance.connect(brainer).submitVote(0);
+                const proposal = await daoGovernance.proposals(0);
                 expect(proposal.voteCount).to.equal(2);
             });
         })
@@ -405,9 +409,9 @@ describe("DAOSage Contract", function () {
             it("should increase voteCount to 1", async function () {
                 const proposalName = "Proposal A";
                 const proposalDesc = "Desc A";
-                await dao.submitProposal(proposalName, proposalDesc);
-                await dao.connect(wise).submitVote(0);
-                const proposal = await dao.proposals(0);
+                await daoGovernance.submitProposal(proposalName, proposalDesc);
+                await daoGovernance.connect(wise).submitVote(0);
+                const proposal = await daoGovernance.proposals(0);
                 expect(proposal.voteCount).to.equal(4);
             });
         })
@@ -416,12 +420,12 @@ describe("DAOSage Contract", function () {
             it("should emit event ProposalValidated", async function () {
                 const proposalName = "Proposal A";
                 const proposalDesc = "Desc A";
-                await dao.submitProposal(proposalName, proposalDesc);
-                await dao.connect(finder).submitVote(0);
-                const tx = await dao.submitVote(0);
+                await daoGovernance.submitProposal(proposalName, proposalDesc);
+                await daoGovernance.connect(finder).submitVote(0);
+                const tx = await daoGovernance.submitVote(0);
                 await tx.wait();
 
-                const events = await dao.queryFilter("ProposalValidated", tx.blockHash);
+                const events = await daoGovernance.queryFilter("ProposalValidated", tx.blockHash);
                 expect(events.length).to.equal(1);
                 expect(events[0].args.id).to.equal(0);
             });
@@ -429,7 +433,7 @@ describe("DAOSage Contract", function () {
 
         describe("submit vote on non existing proposal", function () {
             it("should revert with proposal not found", async function () {
-                await expect(dao.submitVote(2)).to.be.revertedWith("Proposal not found");
+                await expect(daoGovernance.submitVote(2)).to.be.revertedWith("Proposal not found");
             });
         });
 
@@ -437,9 +441,9 @@ describe("DAOSage Contract", function () {
             it("should revert with already submitted", async function () {
                 const proposalName = "Proposal A";
                 const proposalDesc = "Desc A";
-                await dao.submitProposal(proposalName, proposalDesc);
-                await dao.connect(finder).submitVote(0);
-                await expect(dao.connect(finder).submitVote(0)).to.be.revertedWith("Already submitted");
+                await daoGovernance.submitProposal(proposalName, proposalDesc);
+                await daoGovernance.connect(finder).submitVote(0);
+                await expect(daoGovernance.connect(finder).submitVote(0)).to.be.revertedWith("Already submitted");
             });
         });
 
@@ -447,8 +451,8 @@ describe("DAOSage Contract", function () {
             it("should revert with not participant", async function () {
                 const proposalName = "Proposal A";
                 const proposalDesc = "Desc A";
-                await dao.submitProposal(proposalName, proposalDesc);
-                await expect(dao.connect(visitor).submitVote(0)).to.be.revertedWith("Not participant");
+                await daoGovernance.submitProposal(proposalName, proposalDesc);
+                await expect(daoGovernance.connect(visitor).submitVote(0)).to.be.revertedWith("Not participant");
             });
         });
 
@@ -456,11 +460,11 @@ describe("DAOSage Contract", function () {
             it("should emit event ProposalValidated", async function () {
                 const proposalName = "Proposal A";
                 const proposalDesc = "Desc A";
-                await dao.submitProposal(proposalName, proposalDesc);
-                await dao.connect(finder).submitVote(0);
-                await dao.connect(brainer).submitVote(0);
+                await daoGovernance.submitProposal(proposalName, proposalDesc);
+                await daoGovernance.connect(finder).submitVote(0);
+                await daoGovernance.connect(brainer).submitVote(0);
 
-                await expect(dao.submitVote(0)).to.be.revertedWith("Already validated");
+                await expect(daoGovernance.submitVote(0)).to.be.revertedWith("Already validated");
             });
         });
     });
@@ -472,22 +476,22 @@ describe("DAOSage Contract", function () {
             it("should decrease voteCount to 0", async function () {
                 const proposalName = "Proposal A";
                 const proposalDesc = "Desc A";
-                await dao.submitProposal(proposalName, proposalDesc);
-                await dao.submitVote(0);
-                await dao.withdrawVote(0);
-                const proposal = await dao.proposals(0);
+                await daoGovernance.submitProposal(proposalName, proposalDesc);
+                await daoGovernance.submitVote(0);
+                await daoGovernance.withdrawVote(0);
+                const proposal = await daoGovernance.proposals(0);
                 expect(proposal.voteCount).to.equal(0);
             });
 
             it("should emit event VoteSubmitted with false", async function () {
                 const proposalName = "Proposal A";
                 const proposalDesc = "Desc A";
-                await dao.submitProposal(proposalName, proposalDesc);
-                await dao.submitVote(0);
-                const tx = await dao.withdrawVote(0);
+                await daoGovernance.submitProposal(proposalName, proposalDesc);
+                await daoGovernance.submitVote(0);
+                const tx = await daoGovernance.withdrawVote(0);
                 await tx.wait();
 
-                const events = await dao.queryFilter("VoteSubmitted", tx.blockHash);
+                const events = await daoGovernance.queryFilter("VoteSubmitted", tx.blockHash);
                 expect(events.length).to.equal(1);
                 expect(events[0].args.voter).to.equal(admin.address);
                 expect(events[0].args.id).to.equal(0);
@@ -499,10 +503,10 @@ describe("DAOSage Contract", function () {
             it("should decrease voteCount to 0 as finder", async function () {
                 const proposalName = "Proposal A";
                 const proposalDesc = "Desc A";
-                await dao.submitProposal(proposalName, proposalDesc);
-                await dao.connect(finder).submitVote(0);
-                await dao.connect(finder).withdrawVote(0);
-                const proposal = await dao.proposals(0);
+                await daoGovernance.submitProposal(proposalName, proposalDesc);
+                await daoGovernance.connect(finder).submitVote(0);
+                await daoGovernance.connect(finder).withdrawVote(0);
+                const proposal = await daoGovernance.proposals(0);
                 expect(proposal.voteCount).to.equal(0);
             });
         })
@@ -511,10 +515,10 @@ describe("DAOSage Contract", function () {
             it("should decrease voteCount to 0 as brainer", async function () {
                 const proposalName = "Proposal A";
                 const proposalDesc = "Desc A";
-                await dao.submitProposal(proposalName, proposalDesc);
-                await dao.connect(brainer).submitVote(0);
-                await dao.connect(brainer).withdrawVote(0);
-                const proposal = await dao.proposals(0);
+                await daoGovernance.submitProposal(proposalName, proposalDesc);
+                await daoGovernance.connect(brainer).submitVote(0);
+                await daoGovernance.connect(brainer).withdrawVote(0);
+                const proposal = await daoGovernance.proposals(0);
                 expect(proposal.voteCount).to.equal(0);
             });
         })
@@ -523,17 +527,17 @@ describe("DAOSage Contract", function () {
             it("should decrease voteCount to 0 as wisemen", async function () {
                 const proposalName = "Proposal A";
                 const proposalDesc = "Desc A";
-                await dao.submitProposal(proposalName, proposalDesc);
-                await dao.connect(wise).submitVote(0);
-                await dao.connect(wise).withdrawVote(0);
-                const proposal = await dao.proposals(0);
+                await daoGovernance.submitProposal(proposalName, proposalDesc);
+                await daoGovernance.connect(wise).submitVote(0);
+                await daoGovernance.connect(wise).withdrawVote(0);
+                const proposal = await daoGovernance.proposals(0);
                 expect(proposal.voteCount).to.equal(0);
             });
         })
 
         describe("withdraw vote on non existing proposal", function () {
             it("should revert with proposal not found", async function () {
-                await expect(dao.withdrawVote(2)).to.be.revertedWith("Proposal not found");
+                await expect(daoGovernance.withdrawVote(2)).to.be.revertedWith("Proposal not found");
             });
         });
 
@@ -541,8 +545,8 @@ describe("DAOSage Contract", function () {
             it("should revert with not participant", async function () {
                 const proposalName = "Proposal A";
                 const proposalDesc = "Desc A";
-                await dao.submitProposal(proposalName, proposalDesc);
-                await expect(dao.connect(visitor).withdrawVote(0)).to.be.revertedWith("Not participant");
+                await daoGovernance.submitProposal(proposalName, proposalDesc);
+                await expect(daoGovernance.connect(visitor).withdrawVote(0)).to.be.revertedWith("Not participant");
             });
         });
 
@@ -550,8 +554,8 @@ describe("DAOSage Contract", function () {
             it("should revert with already withdrawn", async function () {
                 const proposalName = "Proposal A";
                 const proposalDesc = "Desc A";
-                await dao.submitProposal(proposalName, proposalDesc);
-                await expect(dao.withdrawVote(0)).to.be.revertedWith("Already withdrawn");
+                await daoGovernance.submitProposal(proposalName, proposalDesc);
+                await expect(daoGovernance.withdrawVote(0)).to.be.revertedWith("Already withdrawn");
             });
         });
     });

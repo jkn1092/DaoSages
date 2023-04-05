@@ -30,45 +30,15 @@ contract DAOSage is Ownable, ERC721URIStorage {
         uint nbScore;
     }
 
-    struct Vote {
-        bool voted;
-        uint8 weight;
-    }
-
-    struct Proposal {
-        string name;
-        string description;
-        address owner;
-        bool validated;
-        uint voteCount;
-    }
-
-    uint nbRegisteredAddress;
-    mapping(address => Participant) participants;
+    uint public nbRegisteredAddress;
+    mapping(address => Participant) public participants;
     Project[] public projects;
-    Proposal[] public proposals;
-    mapping(uint => mapping(address => Vote)) proposalsVoted;
 
     // Define an event to log when a new project is submitted
     event ProjectSubmitted(address owner, uint id, string name);
 
     // Define an event to log when an audit is submitted
     event AuditSubmitted(address indexed voter, uint indexed id, uint8 grade);
-
-    // Define an event to log when a new proposal is submitted
-    event ProposalSubmitted(address owner, uint id, string name, string description);
-
-    // Define an event to log when a vote is submitted
-    event VoteSubmitted(address indexed voter, uint indexed id, bool voted);
-
-    // Define an event to log when a proposal is validated
-    event ProposalValidated(uint id);
-
-    modifier onlyParticipants() {
-        require( _exists(participants[msg.sender].tokenFinder) || _exists(participants[msg.sender].tokenBrainer) ||
-            _exists(participants[msg.sender].tokenWisemen) ,"Not participant");
-        _;
-    }
 
     modifier onlyFinders() {
         require( _exists(participants[msg.sender].tokenFinder) || _exists(participants[msg.sender].tokenWisemen) ,
@@ -190,54 +160,7 @@ contract DAOSage is Ownable, ERC721URIStorage {
             audit = projects[_index].totalScore / projects[_index].nbScore;
     }
 
-    function submitProposal(string calldata _name, string calldata _desc) public onlyParticipants {
-        require(bytes(_name).length > 0 && bytes(_desc).length > 0,
-            "Proposal name and description must not be empty.");
-
-        Proposal memory newProposal;
-        newProposal.name = _name;
-        newProposal.description = _desc;
-        newProposal.owner = msg.sender;
-        proposals.push(newProposal);
-
-        emit ProposalSubmitted(msg.sender, proposals.length - 1, _name, _desc);
-    }
-
-    function getProposal(uint _id) public view returns(Proposal memory) {
-        require(_id < proposals.length, 'Proposal not found');
-
-        return proposals[_id];
-    }
-
-    function submitVote(uint _id) public onlyParticipants {
-        require(_id < proposals.length, 'Proposal not found');
-        require(!proposals[_id].validated, 'Already validated');
-        require(!proposalsVoted[_id][msg.sender].voted, 'Already submitted');
-
-        proposalsVoted[_id][msg.sender].voted = true;
-        proposalsVoted[_id][msg.sender].weight = getVoteWeight(msg.sender);
-        proposals[_id].voteCount += proposalsVoted[_id][msg.sender].weight;
-
-        emit VoteSubmitted(msg.sender, _id, true);
-
-        if( proposals[_id].voteCount > nbRegisteredAddress/2 )
-        {
-            proposals[_id].validated = true;
-            emit ProposalValidated(_id);
-        }
-    }
-
-    function withdrawVote(uint _id) public onlyParticipants {
-        require(_id < proposals.length, 'Proposal not found');
-        require(proposalsVoted[_id][msg.sender].voted, 'Already withdrawn');
-
-        proposalsVoted[_id][msg.sender].voted = false;
-        proposals[_id].voteCount -= proposalsVoted[_id][msg.sender].weight;
-
-        emit VoteSubmitted(msg.sender, _id, false);
-    }
-
-    function getVoteWeight(address _voter) private returns(uint8 weight){
+    function getVoteWeight(address _voter) public view returns(uint8 weight){
         if( _exists(participants[_voter].tokenWisemen) )
             weight = 4;
         else if( _exists(participants[_voter].tokenBrainer) )
@@ -245,6 +168,9 @@ contract DAOSage is Ownable, ERC721URIStorage {
         else
             weight = 1;
     }
+
+    function isParticipant(address _participant) public view returns(bool){
+        return(_exists(participants[_participant].tokenFinder) || _exists(participants[_participant].tokenBrainer) ||
+        _exists(participants[_participant].tokenWisemen));
+    }
 }
-
-
