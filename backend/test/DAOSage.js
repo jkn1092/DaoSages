@@ -281,8 +281,8 @@ describe("DAOSage Contract", function () {
         });
 
         describe("submit new proposal as visitor", function () {
-            it("should revert with not found", async function () {
-                await expect(dao.connect(visitor).submitProposal("Test","test")).to.be.revertedWith("Error to add");
+            it("should revert with not participant", async function () {
+                await expect(dao.connect(visitor).submitProposal("Test","test")).to.be.revertedWith("Not participant");
             });
         });
 
@@ -377,6 +377,15 @@ describe("DAOSage Contract", function () {
             });
         });
 
+        describe("submit vote as visitor", function () {
+            it("should revert with not participant", async function () {
+                const proposalName = "Proposal A";
+                const proposalDesc = "Desc A";
+                await dao.submitProposal(proposalName, proposalDesc);
+                await expect(dao.connect(visitor).submitVote(0)).to.be.revertedWith("Not participant");
+            });
+        });
+
         describe("submit vote on validated proposal", function () {
             it("should emit event ProposalValidated", async function () {
                 const proposalName = "Proposal A";
@@ -424,6 +433,15 @@ describe("DAOSage Contract", function () {
         describe("withdraw vote on non existing proposal", function () {
             it("should revert with proposal not found", async function () {
                 await expect(dao.withdrawVote(2)).to.be.revertedWith("Proposal not found");
+            });
+        });
+
+        describe("withdrawn vote as visitor", function () {
+            it("should revert with not participant", async function () {
+                const proposalName = "Proposal A";
+                const proposalDesc = "Desc A";
+                await dao.submitProposal(proposalName, proposalDesc);
+                await expect(dao.connect(visitor).withdrawVote(0)).to.be.revertedWith("Not participant");
             });
         });
 

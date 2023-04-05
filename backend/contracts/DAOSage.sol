@@ -60,16 +60,20 @@ contract DAOSage is Ownable, ERC721URIStorage {
     // Define an event to log when a proposal is validated
     event ProposalValidated(uint id);
 
+    modifier onlyParticipants() {
+        require( _exists(participants[msg.sender].tokenFinder) || _exists(participants[msg.sender].tokenBrainer) ||
+            _exists(participants[msg.sender].tokenWisemen) ,"Not participant");
+        _;
+    }
+
     modifier onlyFinders() {
-        require( (_exists(participants[msg.sender].tokenFinder) && _ownerOf(participants[msg.sender].tokenFinder) == msg.sender)
-            || (_exists(participants[msg.sender].tokenWisemen) && _ownerOf(participants[msg.sender].tokenWisemen) == msg.sender),
+        require( _exists(participants[msg.sender].tokenFinder) || _exists(participants[msg.sender].tokenWisemen) ,
             "Not finder or wisemen");
         _;
     }
 
     modifier onlyBrainers() {
-        require( (_exists(participants[msg.sender].tokenBrainer) && _ownerOf(participants[msg.sender].tokenBrainer) == msg.sender)
-            || (_exists(participants[msg.sender].tokenWisemen) && _ownerOf(participants[msg.sender].tokenWisemen) == msg.sender),
+        require( _exists(participants[msg.sender].tokenBrainer) || _exists(participants[msg.sender].tokenWisemen),
             "Not brainer or wisemen");
         _;
     }
@@ -180,7 +184,7 @@ contract DAOSage is Ownable, ERC721URIStorage {
             audit = projects[_index].totalScore / projects[_index].nbScore;
     }
 
-    function submitProposal(string calldata _name, string calldata _desc) public {
+    function submitProposal(string calldata _name, string calldata _desc) public onlyParticipants {
         require(bytes(_name).length > 0 && bytes(_desc).length > 0,
             "Proposal name and description must not be empty.");
 
@@ -200,7 +204,7 @@ contract DAOSage is Ownable, ERC721URIStorage {
         return proposals[_id];
     }
 
-    function submitVote(uint _id) public {
+    function submitVote(uint _id) public onlyParticipants {
         require(_id < proposals.length, 'Proposal not found');
         require(!proposals[_id].validated, 'Already validated');
         require(!proposalsVoted[_id][msg.sender], 'Already submitted');
@@ -217,7 +221,7 @@ contract DAOSage is Ownable, ERC721URIStorage {
         }
     }
 
-    function withdrawVote(uint _id) public {
+    function withdrawVote(uint _id) public onlyParticipants {
         require(_id < proposals.length, 'Proposal not found');
         require(proposalsVoted[_id][msg.sender], 'Already withdrawn');
 
