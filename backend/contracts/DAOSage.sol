@@ -82,8 +82,9 @@ contract DAOSage is Ownable, ERC721URIStorage {
         mintWisemen(msg.sender);
     }
 
-    function mintFinder(address _to) external {
+    function mintFinder(address _to) external payable {
         require(!_exists(participants[_to].tokenFinder), 'Already minted');
+        require(msg.value >= 0.01 ether, 'insufficient eth');
 
         _tokenIds.increment();
         uint newItemId = _tokenIds.current();
@@ -93,8 +94,9 @@ contract DAOSage is Ownable, ERC721URIStorage {
         nbRegisteredAddress++;
     }
 
-    function mintBrainer(address _to) external {
+    function mintBrainer(address _to) external payable{
         require(!_exists(participants[_to].tokenBrainer), 'Already minted');
+        require(msg.value >= 0.02 ether, 'insufficient eth');
 
         _tokenIds.increment();
         uint newItemId = _tokenIds.current();

@@ -13,8 +13,8 @@ describe("DAOSage Contract", function () {
         await dao.deployed();
 
         dao.mintWisemen(wise.address);
-        dao.mintBrainer(brainer.address);
-        dao.mintFinder(finder.address);
+        dao.mintBrainer(brainer.address, {value: ethers.utils.parseEther("0.02")});
+        dao.mintFinder(finder.address, {value: ethers.utils.parseEther("0.01")});
     });
 
     // Define test cases for the minting part
@@ -22,7 +22,8 @@ describe("DAOSage Contract", function () {
 
         describe("mint finder as visitor", function () {
             it("should find a finder nft in visitor", async function () {
-                await dao.connect(visitor).mintFinder(visitor.address);
+                const cost = ethers.utils.parseEther("0.01");
+                await dao.connect(visitor).mintFinder(visitor.address, {value: cost});
                 const result = await dao.connect(visitor).getRoles();
                 expect(result.isFinder).to.equal(true);
                 expect(result.isBrainer).to.equal(false);
@@ -30,7 +31,8 @@ describe("DAOSage Contract", function () {
             });
 
             it("should return tokenFinderURI", async function () {
-                await dao.connect(visitor).mintFinder(visitor.address);
+                const cost = ethers.utils.parseEther("0.01");
+                await dao.connect(visitor).mintFinder(visitor.address, {value: cost});
                 const result = await dao.connect(visitor).tokenFinderURI();
                 expect(result).to.be.not.undefined;
             });
@@ -38,8 +40,14 @@ describe("DAOSage Contract", function () {
 
         describe("mint finder as finder", function () {
             it("should revert with already minted finder", async function () {
-                await dao.connect(visitor).mintFinder(visitor.address);
-                await expect(dao.connect(visitor).mintFinder(visitor.address)).to.be.revertedWith("Already minted");
+                const cost = ethers.utils.parseEther("0.01");
+                await expect(dao.connect(finder).mintFinder(finder.address, {value: cost})).to.be.revertedWith("Already minted");
+            });
+        })
+
+        describe("mint finder as visitor with no eth", function () {
+            it("should revert with insufficient eth", async function () {
+                await expect(dao.connect(visitor).mintFinder(visitor.address)).to.be.revertedWith("insufficient eth");
             });
         })
 
@@ -51,7 +59,8 @@ describe("DAOSage Contract", function () {
 
         describe("mint brainer as visitor", function () {
             it("should find a brainer nft in visitor", async function () {
-                await dao.connect(visitor).mintBrainer(visitor.address);
+                const cost = ethers.utils.parseEther("0.02");
+                await dao.connect(visitor).mintBrainer(visitor.address, {value: cost});
                 const result = await dao.connect(visitor).getRoles();
                 expect(result.isFinder).to.equal(false);
                 expect(result.isBrainer).to.equal(true);
@@ -59,7 +68,8 @@ describe("DAOSage Contract", function () {
             });
 
             it("should return brainer tokenURI", async function () {
-                await dao.connect(visitor).mintBrainer(visitor.address);
+                const cost = ethers.utils.parseEther("0.02");
+                await dao.connect(visitor).mintBrainer(visitor.address, {value: cost});
                 const result = await dao.connect(visitor).tokenBrainerURI();
                 expect(result).to.be.not.undefined;
             });
@@ -67,7 +77,14 @@ describe("DAOSage Contract", function () {
 
         describe("mint brainer as brainer", function () {
             it("should revert with already minted brainer", async function () {
-                await expect(dao.connect(brainer).mintBrainer(brainer.address)).to.be.revertedWith("Already minted");
+                const cost = ethers.utils.parseEther("0.02");
+                await expect(dao.connect(brainer).mintBrainer(brainer.address, {value: cost})).to.be.revertedWith("Already minted");
+            });
+        })
+
+        describe("mint finder as visitor with no eth", function () {
+            it("should revert with insufficient eth", async function () {
+                await expect(dao.connect(visitor).mintBrainer(visitor.address)).to.be.revertedWith("insufficient eth");
             });
         })
 
