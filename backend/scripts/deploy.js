@@ -9,11 +9,17 @@ const hre = require("hardhat");
 async function main() {
   const DaoSage = await hre.ethers.getContractFactory("DAOSage");
   const daoSage = await DaoSage.deploy();
-
   await daoSage.deployed();
 
+  const DAOSageGovernance = await hre.ethers.getContractFactory("DAOSageGovernance");
+  const daoGovernance = await DAOSageGovernance.deploy(daoSage.address);
+  await daoGovernance.deployed();
+
   console.log(
-    `Contract deployed to ${daoSage.address}`
+      `Contract deployed to ${daoSage.address}`
+  );
+  console.log(
+      `Contract Governance deployed to ${daoGovernance.address}`
   );
 }
 
