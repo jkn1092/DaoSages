@@ -32,7 +32,6 @@ contract DAOSage is Ownable, ERC721URIStorage {
     }
 
     struct Proposal {
-        uint id;
         string name;
         string description;
         address owner;
@@ -40,11 +39,11 @@ contract DAOSage is Ownable, ERC721URIStorage {
         uint voteCount;
     }
 
-    address[] registeredAddress;
-    mapping(address => Participant) public participants;
+    uint nbRegisteredAddress;
+    mapping(address => Participant) participants;
     Project[] public projects;
     Proposal[] public proposals;
-    mapping(uint => mapping(address => bool)) public proposalsVoted;
+    mapping(uint => mapping(address => bool)) proposalsVoted;
 
     // Define an event to log when a new project is submitted
     event ProjectSubmitted(address owner, uint id, string name);
@@ -77,6 +76,69 @@ contract DAOSage is Ownable, ERC721URIStorage {
 
     constructor() ERC721("DaoSages", "DS") {
         mintWisemen(msg.sender);
+    }
+
+    function mintFinder(address _to) external {
+        require(!_exists(participants[_to].tokenFinder), 'Already minted');
+
+        _tokenIds.increment();
+        uint newItemId = _tokenIds.current();
+        _mint(_to, newItemId);
+        _setTokenURI(newItemId, "https://gateway.pinata.cloud/ipfs/QmcTho9sZmAASyihTcKV2bkX4mrnDeyKTBHnYhM8tgpW7X/finder.json");
+        participants[_to].tokenFinder = newItemId;
+        nbRegisteredAddress++;
+    }
+
+    function mintBrainer(address _to) external {
+        require(!_exists(participants[_to].tokenBrainer), 'Already minted');
+
+        _tokenIds.increment();
+        uint newItemId = _tokenIds.current();
+        _mint(_to, newItemId);
+        _setTokenURI(newItemId, "https://gateway.pinata.cloud/ipfs/QmcTho9sZmAASyihTcKV2bkX4mrnDeyKTBHnYhM8tgpW7X/brainer.json");
+        participants[_to].tokenBrainer = newItemId;
+        nbRegisteredAddress++;
+    }
+
+    function mintWisemen(address _to) onlyOwner public {
+        require(!_exists(participants[_to].tokenWisemen), 'Already minted');
+
+        _tokenIds.increment();
+        uint newItemId = _tokenIds.current();
+        _mint(_to, newItemId);
+        _setTokenURI(newItemId, "https://gateway.pinata.cloud/ipfs/QmcTho9sZmAASyihTcKV2bkX4mrnDeyKTBHnYhM8tgpW7X/wise.json");
+        participants[_to].tokenWisemen = newItemId;
+        nbRegisteredAddress++;
+    }
+
+    function getRoles() public view returns (bool isFinder, bool isBrainer, bool isWise) {
+        uint tokenFinder = participants[msg.sender].tokenFinder;
+        uint tokenBrainer = participants[msg.sender].tokenBrainer;
+        uint tokenWisemen = participants[msg.sender].tokenWisemen;
+
+        if(_exists(tokenFinder) && _ownerOf(tokenFinder) == msg.sender)
+            isFinder = true;
+
+        if(_exists(tokenBrainer) && _ownerOf(tokenBrainer) == msg.sender)
+            isBrainer = true;
+
+        if(_exists(tokenWisemen) && _ownerOf(tokenWisemen) == msg.sender)
+            isWise = true;
+    }
+
+    function tokenFinderURI() public view returns(string memory) {
+        require(_exists(participants[msg.sender].tokenFinder), 'Finder not mint');
+        return tokenURI(participants[msg.sender].tokenFinder);
+    }
+
+    function tokenBrainerURI() public view returns(string memory) {
+        require(_exists(participants[msg.sender].tokenBrainer), 'Brainer not mint');
+        return tokenURI(participants[msg.sender].tokenBrainer);
+    }
+
+    function tokenWiseURI() public view returns(string memory) {
+        require(_exists(participants[msg.sender].tokenWisemen), 'Wise not mint');
+        return tokenURI(participants[msg.sender].tokenWisemen);
     }
 
     function submitProject(string memory _name) public onlyFinders {
@@ -122,14 +184,14 @@ contract DAOSage is Ownable, ERC721URIStorage {
         require(bytes(_name).length > 0 && bytes(_desc).length > 0,
             "Proposal name and description must not be empty.");
 
+        uint id = proposals.length;
         Proposal memory newProposal;
-        newProposal.id = proposals.length;
         newProposal.name = _name;
         newProposal.description = _desc;
         newProposal.owner = msg.sender;
         proposals.push(newProposal);
 
-        emit ProposalSubmitted(msg.sender, newProposal.id, _name, _desc);
+        emit ProposalSubmitted(msg.sender, id, _name, _desc);
     }
 
     function getProposal(uint _id) public view returns(Proposal memory) {
@@ -148,7 +210,7 @@ contract DAOSage is Ownable, ERC721URIStorage {
 
         emit VoteSubmitted(msg.sender, _id, true);
 
-        if( proposals[_id].voteCount > registeredAddress.length/2 )
+        if( proposals[_id].voteCount > nbRegisteredAddress/2 )
         {
             proposals[_id].validated = true;
             emit ProposalValidated(_id);
@@ -163,69 +225,6 @@ contract DAOSage is Ownable, ERC721URIStorage {
         proposals[_id].voteCount--;
 
         emit VoteSubmitted(msg.sender, _id, false);
-    }
-
-    function mintFinder(address _to) external {
-        require(!_exists(participants[_to].tokenFinder), 'Already minted');
-
-        _tokenIds.increment();
-        uint newItemId = _tokenIds.current();
-        _mint(_to, newItemId);
-        _setTokenURI(newItemId, "https://gateway.pinata.cloud/ipfs/QmcTho9sZmAASyihTcKV2bkX4mrnDeyKTBHnYhM8tgpW7X/finder.json");
-        participants[_to].tokenFinder = newItemId;
-        registeredAddress.push(_to);
-    }
-
-    function mintBrainer(address _to) external {
-        require(!_exists(participants[_to].tokenBrainer), 'Already minted');
-
-        _tokenIds.increment();
-        uint newItemId = _tokenIds.current();
-        _mint(_to, newItemId);
-        _setTokenURI(newItemId, "https://gateway.pinata.cloud/ipfs/QmcTho9sZmAASyihTcKV2bkX4mrnDeyKTBHnYhM8tgpW7X/brainer.json");
-        participants[_to].tokenBrainer = newItemId;
-        registeredAddress.push(_to);
-    }
-
-    function mintWisemen(address _to) onlyOwner public {
-        require(!_exists(participants[_to].tokenWisemen), 'Already minted');
-
-        _tokenIds.increment();
-        uint newItemId = _tokenIds.current();
-        _mint(_to, newItemId);
-        _setTokenURI(newItemId, "https://gateway.pinata.cloud/ipfs/QmcTho9sZmAASyihTcKV2bkX4mrnDeyKTBHnYhM8tgpW7X/wise.json");
-        participants[_to].tokenWisemen = newItemId;
-        registeredAddress.push(_to);
-    }
-
-    function getRoles() public view returns (bool isFinder, bool isBrainer, bool isWise) {
-        uint tokenFinder = participants[msg.sender].tokenFinder;
-        uint tokenBrainer = participants[msg.sender].tokenBrainer;
-        uint tokenWisemen = participants[msg.sender].tokenWisemen;
-
-        if(_exists(tokenFinder) && _ownerOf(tokenFinder) == msg.sender)
-            isFinder = true;
-
-        if(_exists(tokenBrainer) && _ownerOf(tokenBrainer) == msg.sender)
-            isBrainer = true;
-
-        if(_exists(tokenWisemen) && _ownerOf(tokenWisemen) == msg.sender)
-            isWise = true;
-    }
-
-    function tokenFinderURI() public view returns(string memory) {
-        require(_exists(participants[msg.sender].tokenFinder), 'Finder not mint');
-        return tokenURI(participants[msg.sender].tokenFinder);
-    }
-
-    function tokenBrainerURI() public view returns(string memory) {
-        require(_exists(participants[msg.sender].tokenBrainer), 'Brainer not mint');
-        return tokenURI(participants[msg.sender].tokenBrainer);
-    }
-
-    function tokenWiseURI() public view returns(string memory) {
-        require(_exists(participants[msg.sender].tokenWisemen), 'Wise not mint');
-        return tokenURI(participants[msg.sender].tokenWisemen);
     }
 }
 
