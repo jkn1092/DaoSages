@@ -23,12 +23,16 @@ contract DAOSage is Ownable, ERC721URIStorage {
     }
 
     struct Project {
-        uint id;
         string name;
         address owner;
         mapping(address => Audit) audits;
         uint totalScore;
         uint nbScore;
+    }
+
+    struct Vote {
+        bool voted;
+        uint8 weight;
     }
 
     struct Proposal {
@@ -43,7 +47,7 @@ contract DAOSage is Ownable, ERC721URIStorage {
     mapping(address => Participant) participants;
     Project[] public projects;
     Proposal[] public proposals;
-    mapping(uint => mapping(address => bool)) proposalsVoted;
+    mapping(uint => mapping(address => Vote)) proposalsVoted;
 
     // Define an event to log when a new project is submitted
     event ProjectSubmitted(address owner, uint id, string name);
@@ -190,14 +194,13 @@ contract DAOSage is Ownable, ERC721URIStorage {
         require(bytes(_name).length > 0 && bytes(_desc).length > 0,
             "Proposal name and description must not be empty.");
 
-        uint id = proposals.length;
         Proposal memory newProposal;
         newProposal.name = _name;
         newProposal.description = _desc;
         newProposal.owner = msg.sender;
         proposals.push(newProposal);
 
-        emit ProposalSubmitted(msg.sender, id, _name, _desc);
+        emit ProposalSubmitted(msg.sender, proposals.length - 1, _name, _desc);
     }
 
     function getProposal(uint _id) public view returns(Proposal memory) {
@@ -209,10 +212,11 @@ contract DAOSage is Ownable, ERC721URIStorage {
     function submitVote(uint _id) public onlyParticipants {
         require(_id < proposals.length, 'Proposal not found');
         require(!proposals[_id].validated, 'Already validated');
-        require(!proposalsVoted[_id][msg.sender], 'Already submitted');
+        require(!proposalsVoted[_id][msg.sender].voted, 'Already submitted');
 
-        proposalsVoted[_id][msg.sender] = true;
-        proposals[_id].voteCount++;
+        proposalsVoted[_id][msg.sender].voted = true;
+        proposalsVoted[_id][msg.sender].weight = getVoteWeight(msg.sender);
+        proposals[_id].voteCount += proposalsVoted[_id][msg.sender].weight;
 
         emit VoteSubmitted(msg.sender, _id, true);
 
@@ -225,12 +229,21 @@ contract DAOSage is Ownable, ERC721URIStorage {
 
     function withdrawVote(uint _id) public onlyParticipants {
         require(_id < proposals.length, 'Proposal not found');
-        require(proposalsVoted[_id][msg.sender], 'Already withdrawn');
+        require(proposalsVoted[_id][msg.sender].voted, 'Already withdrawn');
 
-        proposalsVoted[_id][msg.sender] = false;
-        proposals[_id].voteCount--;
+        proposalsVoted[_id][msg.sender].voted = false;
+        proposals[_id].voteCount -= proposalsVoted[_id][msg.sender].weight;
 
         emit VoteSubmitted(msg.sender, _id, false);
+    }
+
+    function getVoteWeight(address _voter) private returns(uint8 weight){
+        if( _exists(participants[_voter].tokenWisemen) )
+            weight = 4;
+        else if( _exists(participants[_voter].tokenBrainer) )
+            weight = 2;
+        else
+            weight = 1;
     }
 }
 

@@ -1,6 +1,5 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
-const {address} = require("hardhat/internal/core/config/config-validation");
 
 describe("DAOSage Contract", function () {
     let dao, admin, wise, brainer, finder, visitor
@@ -345,13 +344,13 @@ describe("DAOSage Contract", function () {
     // Define test cases for the voting function
     describe("voted", function () {
         describe("submit vote existing proposal", function () {
-            it("should increase voteCount to 1", async function () {
+            it("should increase voteCount to 4", async function () {
                 const proposalName = "Proposal A";
                 const proposalDesc = "Desc A";
                 await dao.submitProposal(proposalName, proposalDesc);
                 await dao.submitVote(0);
                 const proposal = await dao.proposals(0);
-                expect(proposal.voteCount).to.equal(1);
+                expect(proposal.voteCount).to.equal(4);
             });
 
             it("should emit event VoteSubmitted with true", async function () {
@@ -371,8 +370,8 @@ describe("DAOSage Contract", function () {
             it("should not emit event ProposalValidated", async function () {
                 const proposalName = "Proposal A";
                 const proposalDesc = "Desc A";
-                await dao.submitProposal(proposalName, proposalDesc);
-                const tx = await dao.submitVote(0);
+                await dao.connect(finder).submitProposal(proposalName, proposalDesc);
+                const tx = await dao.connect(finder).submitVote(0);
                 await tx.wait();
 
                 const events = await dao.queryFilter("ProposalValidated", tx.blockHash);
@@ -380,13 +379,45 @@ describe("DAOSage Contract", function () {
             });
         });
 
+        describe("submit vote existing proposal as finder", function () {
+            it("should increase voteCount to 1", async function () {
+                const proposalName = "Proposal A";
+                const proposalDesc = "Desc A";
+                await dao.submitProposal(proposalName, proposalDesc);
+                await dao.connect(finder).submitVote(0);
+                const proposal = await dao.proposals(0);
+                expect(proposal.voteCount).to.equal(1);
+            });
+        })
+
+        describe("submit vote existing proposal as brainer", function () {
+            it("should increase voteCount to 1", async function () {
+                const proposalName = "Proposal A";
+                const proposalDesc = "Desc A";
+                await dao.submitProposal(proposalName, proposalDesc);
+                await dao.connect(brainer).submitVote(0);
+                const proposal = await dao.proposals(0);
+                expect(proposal.voteCount).to.equal(2);
+            });
+        })
+
+        describe("submit vote existing proposal as wisemen", function () {
+            it("should increase voteCount to 1", async function () {
+                const proposalName = "Proposal A";
+                const proposalDesc = "Desc A";
+                await dao.submitProposal(proposalName, proposalDesc);
+                await dao.connect(wise).submitVote(0);
+                const proposal = await dao.proposals(0);
+                expect(proposal.voteCount).to.equal(4);
+            });
+        })
+
         describe("submit enough votes to validate proposal", function () {
             it("should emit event ProposalValidated", async function () {
                 const proposalName = "Proposal A";
                 const proposalDesc = "Desc A";
                 await dao.submitProposal(proposalName, proposalDesc);
                 await dao.connect(finder).submitVote(0);
-                await dao.connect(brainer).submitVote(0);
                 const tx = await dao.submitVote(0);
                 await tx.wait();
 
@@ -407,8 +438,8 @@ describe("DAOSage Contract", function () {
                 const proposalName = "Proposal A";
                 const proposalDesc = "Desc A";
                 await dao.submitProposal(proposalName, proposalDesc);
-                await dao.submitVote(0);
-                await expect(dao.submitVote(0)).to.be.revertedWith("Already submitted");
+                await dao.connect(finder).submitVote(0);
+                await expect(dao.connect(finder).submitVote(0)).to.be.revertedWith("Already submitted");
             });
         });
 
@@ -428,9 +459,8 @@ describe("DAOSage Contract", function () {
                 await dao.submitProposal(proposalName, proposalDesc);
                 await dao.connect(finder).submitVote(0);
                 await dao.connect(brainer).submitVote(0);
-                await dao.submitVote(0);
 
-                await expect(dao.connect(wise).submitVote(0)).to.be.revertedWith("Already validated");
+                await expect(dao.submitVote(0)).to.be.revertedWith("Already validated");
             });
         });
     });
@@ -464,6 +494,42 @@ describe("DAOSage Contract", function () {
                 expect(events[0].args.voted).to.equal(false);
             });
         });
+
+        describe("withdraw submitted vote as finder", function () {
+            it("should decrease voteCount to 0 as finder", async function () {
+                const proposalName = "Proposal A";
+                const proposalDesc = "Desc A";
+                await dao.submitProposal(proposalName, proposalDesc);
+                await dao.connect(finder).submitVote(0);
+                await dao.connect(finder).withdrawVote(0);
+                const proposal = await dao.proposals(0);
+                expect(proposal.voteCount).to.equal(0);
+            });
+        })
+
+        describe("withdraw submitted vote as brainer", function () {
+            it("should decrease voteCount to 0 as brainer", async function () {
+                const proposalName = "Proposal A";
+                const proposalDesc = "Desc A";
+                await dao.submitProposal(proposalName, proposalDesc);
+                await dao.connect(brainer).submitVote(0);
+                await dao.connect(brainer).withdrawVote(0);
+                const proposal = await dao.proposals(0);
+                expect(proposal.voteCount).to.equal(0);
+            });
+        })
+
+        describe("withdraw submitted vote as wisemen", function () {
+            it("should decrease voteCount to 0 as wisemen", async function () {
+                const proposalName = "Proposal A";
+                const proposalDesc = "Desc A";
+                await dao.submitProposal(proposalName, proposalDesc);
+                await dao.connect(wise).submitVote(0);
+                await dao.connect(wise).withdrawVote(0);
+                const proposal = await dao.proposals(0);
+                expect(proposal.voteCount).to.equal(0);
+            });
+        })
 
         describe("withdraw vote on non existing proposal", function () {
             it("should revert with proposal not found", async function () {
