@@ -23,7 +23,7 @@ import {REQUEST} from "@/services/graphql";
 import {useQuery} from "@apollo/client";
 import {useAccount, useProvider, useSigner} from "wagmi";
 import {ethers} from "ethers";
-import {abi, contractAddress} from "@/constants";
+import {abiDao, contractDaoAddress} from "@/constants";
 import Layout from "@/components/Layout/Layout";
 
 export default function getProject() {
@@ -47,7 +47,7 @@ export default function getProject() {
 
     const submitAudit = async() => {
         try {
-            const contract = new ethers.Contract(contractAddress, abi, signer);
+            const contract = new ethers.Contract(contractDaoAddress, abiDao, signer);
             let transaction = await contract.auditProject(projectId, audit);
             transaction.wait();
 
@@ -76,7 +76,7 @@ export default function getProject() {
             if( projectId !== null )
             {
                 let grade;
-                const contract = new ethers.Contract(contractAddress, abi, provider);
+                const contract = new ethers.Contract(contractDaoAddress, abiDao, provider);
                 let eventFilter = contract.filters.AuditSubmitted(address, projectId);
                 let events = await contract.queryFilter(eventFilter);
                 events.forEach(event => {
