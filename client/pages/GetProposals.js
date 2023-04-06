@@ -18,7 +18,7 @@ import {useEffect, useState} from "react";
 import Link from "next/link";
 
 
-export default function getProposals() {
+export default function GetProposals() {
     const provider = useProvider()
     const [proposals, setProposals] = useState();
 
@@ -66,7 +66,7 @@ export default function getProposals() {
                              <Button>
                                  <Link
                                      href={{
-                                         pathname: '/getProposal',
+                                         pathname: '/GetProposal',
                                          query: {
                                              id: item.proposalId
                                          }

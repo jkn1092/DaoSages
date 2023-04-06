@@ -16,7 +16,7 @@ import {ethers} from "ethers";
 import {abiGovernance, contractGovernanceAddress} from "@/constants";
 
 
-export default function submitProposal() {
+export default function SubmitProposal() {
     const { data: signer } = useSigner();
     const toast = useToast();
 

@@ -5,20 +5,16 @@ import Layout from "@/components/Layout/Layout";
 import {
     Box,
     Button, Container,
-    Flex,
-    FormControl,
-    FormLabel,
     Heading,
-    Input, List, ListItem, SimpleGrid, Spinner,
+    List, ListItem, SimpleGrid, Spinner,
     Stack, Text,
-    Textarea,
     useColorModeValue, useToast
 } from "@chakra-ui/react";
-import {useAccount, useProvider, useQueryClient, useSigner} from "wagmi";
+import {useAccount, useProvider, useSigner} from "wagmi";
 import {useEffect, useState} from "react";
 
 
-export default function getProposal() {
+export default function GetProposal() {
     const searchParams = useSearchParams();
     let proposalId = searchParams.get('id');
 

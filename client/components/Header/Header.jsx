@@ -30,8 +30,8 @@ const Header = () => {
         {
             return(
                 <>
-                    <Text><Link href="/submitProject">Submit Project</Link></Text>
-                    <Text><Link href="/submitProposal">Submit Proposal</Link></Text>
+                    <Text><Link href="/SubmitProject">Submit Project</Link></Text>
+                    <Text><Link href="/SubmitProposal">Submit Proposal</Link></Text>
                 </>
             )
         }
@@ -43,7 +43,7 @@ const Header = () => {
             return(
                 <>
                     <Text><Link href="/">Projects</Link></Text>
-                    <Text><Link href="/submitProposal">Submit Proposal</Link></Text>
+                    <Text><Link href="/SubmitProposal">Submit Proposal</Link></Text>
                 </>
             )
         }
@@ -57,9 +57,9 @@ const Header = () => {
                 { isConnected ?
                     (
                         <>
-                            <Text><Link href="/profile">Profile</Link></Text>
+                            <Text><Link href="/Profile">Profile</Link></Text>
                             <FinderMenu/>
-                            <Text><Link href="/getProposals">Proposals</Link></Text>
+                            <Text><Link href="/GetProposals">Proposals</Link></Text>
                         </>
                     )
                     :

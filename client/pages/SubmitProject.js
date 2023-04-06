@@ -16,7 +16,7 @@ import { useMutation } from '@apollo/client';
 import {contractDaoAddress, abiDao} from "@/constants";
 import {REQUEST} from "@/services/graphql";
 
-export default function submitProject() {
+export default function SubmitProject() {
     const { data: signer } = useSigner();
     const toast = useToast();
 

@@ -26,7 +26,7 @@ import {ethers} from "ethers";
 import {abiDao, contractDaoAddress} from "@/constants";
 import Layout from "@/components/Layout/Layout";
 
-export default function getProject() {
+export default function GetProject() {
     const searchParams = useSearchParams();
     let projectId = searchParams.get('id');
 

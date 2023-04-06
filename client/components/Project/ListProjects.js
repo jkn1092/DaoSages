@@ -50,7 +50,7 @@ const ListProjects = () => {
                             <Button>
                                 <Link
                                     href={{
-                                        pathname: '/getProject',
+                                        pathname: '/GetProject',
                                         query: {
                                             id: item.projectId
                                         }
