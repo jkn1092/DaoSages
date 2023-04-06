@@ -126,7 +126,9 @@ contract DAOSage is Ownable, ERC721URIStorage {
 
     /**
      * @dev Returns whether the calling address is a finder, a brainer, and/or a wiseman.
-     * @return Three booleans, indicating whether the calling address is a finder, a brainer, and/or a wiseman.
+     * @return isFinder boolean indicating whether the calling address is a finder.
+     * @return isBrainer boolean indicating whether the calling address is a brainer.
+     * @return isWise boolean indicating whether the calling address is a wiseman.
      */
     function getRoles() public view returns (bool isFinder, bool isBrainer, bool isWise) {
         uint tokenFinder = participants[msg.sender].tokenFinder;
@@ -218,7 +220,7 @@ contract DAOSage is Ownable, ERC721URIStorage {
     /**
      * @dev Function to get audit of a project.
      * @param _index The id of the project.
-     * @return uint containing the audit of the project
+     * @return audit uint containing the audit of the project
      */
     function getAudit(uint256 _index) public view returns(uint audit) {
         require(_index >= 0 && _index < projects.length, "Invalid project index.");
@@ -230,7 +232,7 @@ contract DAOSage is Ownable, ERC721URIStorage {
     /**
      * @dev Function to get weight of a voter based on the roles minted. Used by the DAOSageGovernance.
      * @param _voter The address of the voter.
-     * @return uint containing the weight of the voter
+     * @return weight uint containing the weight of the voter
      */
     function getVoteWeight(address _voter) public view returns(uint8 weight){
         if( _exists(participants[_voter].tokenWisemen) )
