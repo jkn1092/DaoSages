@@ -10,12 +10,12 @@ import {
 import {ethers} from "ethers";
 import {useProvider} from "wagmi";
 import {useEffect, useState} from "react";
-import {abi, contractAddress} from "@/constants";
+import {abiDao, contractDaoAddress} from "@/constants";
 import Link from "next/link";
 
 const ListProjects = () => {
     const provider = useProvider()
-    const contract = new ethers.Contract(contractAddress, abi, provider);
+    const contract = new ethers.Contract(contractDaoAddress, abiDao, provider);
     const [projects, setProjects] = useState();
 
     useEffect(() => {

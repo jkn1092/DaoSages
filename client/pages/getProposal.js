@@ -1,5 +1,5 @@
 import {ethers} from "ethers";
-import {abi, contractAddress} from "@/constants";
+import {abiGovernance, contractGovernanceAddress} from "@/constants";
 import {useSearchParams} from "next/navigation";
 import Layout from "@/components/Layout/Layout";
 import {
@@ -31,7 +31,7 @@ export default function getProposal() {
 
     const submitWithdraw = async() => {
         try {
-            const contract = new ethers.Contract(contractAddress, abi, signer)
+            const contract = new ethers.Contract(contractGovernanceAddress, abiGovernance, signer)
             await contract.withdrawVote(proposalId);
             setVoted(false);
 
@@ -56,7 +56,7 @@ export default function getProposal() {
 
     const submitVote = async() => {
         try {
-            const contract = new ethers.Contract(contractAddress, abi, signer)
+            const contract = new ethers.Contract(contractGovernanceAddress, abiGovernance, signer)
             await contract.submitVote(proposalId);
             setVoted(true);
 
@@ -102,7 +102,7 @@ export default function getProposal() {
         (async function() {
             if( proposalId !== null )
             {
-                const contract = new ethers.Contract(contractAddress, abi, provider);
+                const contract = new ethers.Contract(contractGovernanceAddress, abiGovernance, provider);
                 let proposalFetch = await contract.getProposal(proposalId);
                 setProposal(proposalFetch);
 

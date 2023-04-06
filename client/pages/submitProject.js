@@ -13,7 +13,7 @@ import {
 import {ethers} from "ethers";
 import {useState} from "react";
 import { useMutation } from '@apollo/client';
-import {contractAddress, abi} from "@/constants";
+import {contractDaoAddress, abiDao} from "@/constants";
 import {REQUEST} from "@/services/graphql";
 
 export default function submitProject() {
@@ -32,7 +32,7 @@ export default function submitProject() {
 
     const submitNewProject = async() => {
         try {
-            const contract = new ethers.Contract(contractAddress, abi, signer)
+            const contract = new ethers.Contract(contractDaoAddress, abiDao, signer)
             let transaction = await contract.submitProject(name);
             const receipt = await transaction.wait();
             const daoId = ethers.BigNumber.from(receipt.events[0].args.id).toNumber();

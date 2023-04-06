@@ -13,7 +13,7 @@ import {
 import {useSigner} from "wagmi";
 import {useState} from "react";
 import {ethers} from "ethers";
-import {abi, contractAddress} from "@/constants";
+import {abiGovernance, contractGovernanceAddress} from "@/constants";
 
 
 export default function submitProposal() {
@@ -25,7 +25,7 @@ export default function submitProposal() {
 
     const submitNewProposal = async() => {
         try {
-            const contract = new ethers.Contract(contractAddress, abi, signer)
+            const contract = new ethers.Contract(contractGovernanceAddress, abiGovernance, signer)
             await contract.submitProposal(name, description);
 
             toast({

@@ -9,11 +9,11 @@ import {
     Heading,
     Stack,
     StackDivider,
-    Text, useToast
+    Text
 } from "@chakra-ui/react";
-import {useAccount, useProvider, useSigner} from "wagmi";
+import { useProvider} from "wagmi";
 import {ethers} from "ethers";
-import {abi, contractAddress} from "@/constants";
+import {abiGovernance, contractGovernanceAddress} from "@/constants";
 import {useEffect, useState} from "react";
 import Link from "next/link";
 
@@ -25,7 +25,7 @@ export default function getProposals() {
 
     useEffect(() => {
         (async function() {
-            const contract = new ethers.Contract(contractAddress, abi, provider);
+            const contract = new ethers.Contract(contractGovernanceAddress, abiGovernance, provider);
             let eventFilter = contract.filters.ProposalSubmitted();
             let events = await contract.queryFilter(eventFilter);
 

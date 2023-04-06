@@ -4,7 +4,7 @@ import Link from 'next/link';
 import {useAccount, useProvider, useSigner} from "wagmi";
 import {useEffect, useState} from "react";
 import {ethers} from "ethers";
-import {abi, contractAddress} from "@/constants";
+import {abiDao, contractDaoAddress} from "@/constants";
 
 const Header = () => {
     const { data: signer } = useSigner();
@@ -16,7 +16,7 @@ const Header = () => {
     useEffect(() => {
         (async function() {
             if( isConnected ){
-                const contract = new ethers.Contract(contractAddress, abi, signer);
+                const contract = new ethers.Contract(contractDaoAddress, abiDao, signer);
                 const roles = await contract.getRoles();
                 setIsFinder(roles.isFinder);
                 setIsBrainer(roles.isBrainer);

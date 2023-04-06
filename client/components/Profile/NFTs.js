@@ -1,8 +1,8 @@
 import {useAccount, useProvider, useSigner} from "wagmi";
 import {useEffect, useState} from "react";
 import {ethers} from "ethers";
-import {abi, contractAddress} from "@/constants";
-import {Box, Button, Center, Heading, Stack, Text, useColorModeValue, useToast} from "@chakra-ui/react";
+import {abiDao, contractDaoAddress} from "@/constants";
+import {Box, Button, Center, Stack, Text, useColorModeValue, useToast} from "@chakra-ui/react";
 import Image from "next/image";
 import axios from "axios";
 
@@ -18,12 +18,9 @@ const NFTs = () => {
     const [isBrainer, setIsBrainer] = useState();
     const [isWise, setIsWise] = useState();
 
-    const IMAGE =
-        'https://gateway.pinata.cloud/ipfs/QmcXfse4roevf8hZu1C27kaFnV4DuvJwKLGQx1MTrc2kKA/finder.png';
-
     useEffect(() => {
         (async function() {
-            const contract = new ethers.Contract(contractAddress, abi, signer);
+            const contract = new ethers.Contract(contractDaoAddress, abiDao, signer);
             const roles = await contract.getRoles();
             if( roles.isFinder )
             {
@@ -235,8 +232,9 @@ const NFTs = () => {
 
     const mintFinder = async() => {
         try {
-            const contract = new ethers.Contract(contractAddress, abi, signer)
-            await contract.mintFinder(address);
+            let amountInEther = '0.01'
+            const contract = new ethers.Contract(contractDaoAddress, abiDao, signer)
+            await contract.mintFinder(address, {value: ethers.utils.parseEther(amountInEther)});
 
             toast({
                 title: 'Congratulations',
@@ -259,8 +257,9 @@ const NFTs = () => {
 
     const mintBrainer = async() => {
         try {
-            const contract = new ethers.Contract(contractAddress, abi, signer)
-            await contract.mintBrainer(address);
+            let amountInEther = '0.02'
+            const contract = new ethers.Contract(contractDaoAddress, abiDao, signer)
+            await contract.mintBrainer(address, {value: ethers.utils.parseEther(amountInEther)});
 
             toast({
                 title: 'Congratulations',
