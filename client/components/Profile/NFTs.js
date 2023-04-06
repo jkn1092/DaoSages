@@ -44,6 +44,8 @@ const NFTs = () => {
         })();
     },[provider])
 
+    const white = useColorModeValue('white', 'gray.800')
+
     const MintFinder = () => {
         if( isFinder )
         {
@@ -55,7 +57,7 @@ const NFTs = () => {
                         p={6}
                         maxW={'330px'}
                         w={'full'}
-                        bg={useColorModeValue('white', 'gray.800')}
+                        bg={white}
                         boxShadow={'2xl'}
                         rounded={'lg'}
                         pos={'relative'}
@@ -119,7 +121,7 @@ const NFTs = () => {
                         p={6}
                         maxW={'330px'}
                         w={'full'}
-                        bg={useColorModeValue('white', 'gray.800')}
+                        bg={white}
                         boxShadow={'2xl'}
                         rounded={'lg'}
                         pos={'relative'}
@@ -183,7 +185,7 @@ const NFTs = () => {
                         p={6}
                         maxW={'330px'}
                         w={'full'}
-                        bg={useColorModeValue('white', 'gray.800')}
+                        bg={white}
                         boxShadow={'2xl'}
                         rounded={'lg'}
                         pos={'relative'}

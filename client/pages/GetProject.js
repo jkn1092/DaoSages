@@ -106,6 +106,9 @@ export default function GetProject() {
         }
     }
 
+    const gray = useColorModeValue('gray.900', 'gray.400');
+    const yellow = useColorModeValue('yellow.500', 'yellow.300');
+
     return(
         <Layout>
             { projectFetched != null ?
@@ -124,7 +127,7 @@ export default function GetProject() {
                                         Project {projectFetched.name}
                                     </Heading>
                                     <Text
-                                        color={useColorModeValue('gray.900', 'gray.400')}
+                                        color={gray}
                                         fontWeight={300}
                                         fontSize={'2xl'}>
                                         {projectFetched?.description}
@@ -134,7 +137,7 @@ export default function GetProject() {
                                 <Box>
                                     <Text
                                         fontSize={{ base: '16px', lg: '18px' }}
-                                        color={useColorModeValue('yellow.500', 'yellow.300')}
+                                        color={yellow}
                                         fontWeight={'500'}
                                         textTransform={'uppercase'}
                                         mb={'4'}>
