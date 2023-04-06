@@ -8,12 +8,12 @@ import { ProjectsModule } from './projects/projects.module';
 import {join} from "path";
 
 const url = process.env.MONGO_URL || '127.0.0.1';
-//const user = process.env.MONGO_USER || 'admin';
-//const password = process.env.MONGO_PASSWORD || 'admin';
+const user = process.env.MONGO_USER || '';
+const password = process.env.MONGO_PASSWORD || '';
 
 @Module({
   imports: [
-    MongooseModule.forRoot(`mongodb://${url}:27017`, {
+    MongooseModule.forRoot(`mongodb://${user}:${password}@${url}:27017`, {
       dbName: 'dao_sages',
     }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
