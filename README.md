@@ -2,12 +2,17 @@
 
 This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, and a script that deploys that contract.
 
-Try running some of the following tasks:
+Unit Test coverage with solidity-coverage:
 
 ```shell
-npx hardhat help
-npx hardhat test
-REPORT_GAS=true npx hardhat test
-npx hardhat node
-npx hardhat run scripts/deploy.js
+  56 passing (5s)
+------------------------|----------|----------|----------|----------|----------------|
+File                    |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered Lines |
+------------------------|----------|----------|----------|----------|----------------|
+ contracts/             |      100 |    96.25 |      100 |      100 |                |
+  DAOSage.sol           |      100 |    94.64 |      100 |      100 |                |
+  DAOSageGovernance.sol |      100 |      100 |      100 |      100 |                |
+------------------------|----------|----------|----------|----------|----------------|
+All files               |      100 |    96.25 |      100 |      100 |                |
+------------------------|----------|----------|----------|----------|----------------|
 ```
