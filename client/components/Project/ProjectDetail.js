@@ -40,7 +40,14 @@ export default function ProjectDetail() {
         },
     });
 
+    const getCoinGeckoResult = useQuery(REQUEST.QUERY.PROJECT.GET_COIN_GECKO,{
+        variables: {
+            daoId: projectId,
+        },
+    });
+
     const projectFetched = getProjectResult?.data?.project || null;
+    const coinGeckoFetched = getCoinGeckoResult?.data?.coinGecko || null;
 
     const submitAudit = async() => {
         try {
@@ -87,6 +94,47 @@ export default function ProjectDetail() {
 
         })();
     },[projectId])
+
+
+    const CoinGeckoInput = () => {
+        if( coinGeckoFetched !== null )
+        {
+            return(
+                <>
+                    <ListItem>
+                        <Text as={'span'} fontWeight={'bold'}>
+                            CoinGecko Rank:
+                        </Text>{' '}
+                        {coinGeckoFetched.coingecko_rank}
+                    </ListItem>
+                    <ListItem>
+                        <Text as={'span'} fontWeight={'bold'}>
+                            CoinGecko Score:
+                        </Text>{' '}
+                        {coinGeckoFetched.coingecko_score}
+                    </ListItem>
+                    <ListItem>
+                        <Text as={'span'} fontWeight={'bold'}>
+                            Developer Score:
+                        </Text>{' '}
+                        {coinGeckoFetched.developer_score}
+                    </ListItem>
+                    <ListItem>
+                        <Text as={'span'} fontWeight={'bold'}>
+                            Community Score:
+                        </Text>{' '}
+                        {coinGeckoFetched.community_score}
+                    </ListItem>
+                    <ListItem>
+                        <Text as={'span'} fontWeight={'bold'}>
+                            Liquidity Score:
+                        </Text>{' '}
+                        {coinGeckoFetched.liquidity_score}
+                    </ListItem>
+                </>
+            )
+        }
+    }
 
     const AuditInput = () => {
         if( projectId !== null )
@@ -166,6 +214,7 @@ export default function ProjectDetail() {
                                             </Text>{' '}
                                             {projectFetched?.email}
                                         </ListItem>
+                                        <CoinGeckoInput/>
                                         <ListItem>
                                             <Text as={'span'} fontWeight={'bold'}>
                                                 DAO Audit:

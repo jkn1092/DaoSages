@@ -27,6 +27,22 @@ export const REQUEST = {
                         socialMedia
                         description
                     }
+                }`,
+            GET_COIN_GECKO: gql`
+                query coinGeckoFromId(
+                    $daoId: String!,
+                ) {
+                    coinGecko(
+                        daoId:$daoId,
+                    )
+                    {
+                        coingecko_rank,
+                        coingecko_score,
+                        developer_score,
+                        community_score,
+                        liquidity_score,
+                        public_interest_score
+                    }
                 }`
         }
     },
