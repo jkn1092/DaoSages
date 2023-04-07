@@ -3,6 +3,7 @@ import '@rainbow-me/rainbowkit/styles.css';
 
 import {configureChains, createClient, WagmiConfig} from "wagmi";
 import { hardhat } from 'wagmi/chains';
+import { alchemyProvider } from 'wagmi/providers/alchemy';
 import { publicProvider } from 'wagmi/providers/public';
 import {getDefaultWallets , RainbowKitProvider} from "@rainbow-me/rainbowkit";
 import { ChakraProvider } from '@chakra-ui/react'
@@ -12,7 +13,7 @@ import client from "@/apollo-client";
 const { chains, provider } = configureChains(
     [hardhat],
     [
-      //alchemyProvider({ apiKey: process.env.ALCHEMY_ID }),
+      alchemyProvider({ apiKey: process.env.ALCHEMY_ID }),
       publicProvider()
     ]
 );
@@ -30,8 +31,6 @@ const wagmiClient = createClient({
     isBrainer : false,
     isWise : false*/
 })
-
-
 
 export default function App({ Component, pageProps }) {
   return(
