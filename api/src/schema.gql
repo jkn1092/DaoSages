@@ -2,6 +2,17 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type CoinGecko {
+  coingecko_rank: String
+  coingecko_score: String
+  community_score: String
+  developer_score: String
+  liquidity_score: String
+  name: String!
+  public_interest_score: String
+  token: String!
+}
+
 input CreateProjectInput {
   codeSource: String!
   daoId: String!
@@ -34,7 +45,7 @@ type Project {
 }
 
 type Query {
-  coinGecko(daoId: String!): Project!
+  coinGecko(daoId: String!): CoinGecko!
   project(daoId: String!): Project!
   projects: [Project!]!
 }

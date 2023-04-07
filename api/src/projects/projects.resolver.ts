@@ -5,6 +5,7 @@ import { Project } from './entities/project.entity';
 import { CreateProjectInput } from './dto/create-project.input';
 import {ProjectNotFoundException} from "../exceptions/ProjectNotFoundException";
 import {ProjectAlreadyExistsException} from "../exceptions/ProjectAlreadyExistsException";
+import {CoinGecko} from "./entities/coinGecko.entity";
 
 @Resolver(() => Project)
 export class ProjectsResolver {
@@ -38,7 +39,7 @@ export class ProjectsResolver {
     return projectFound;
   }
 
-  @Query(() => Project, { name: 'coinGecko' })
+  @Query(() => CoinGecko, { name: 'coinGecko' })
   async findCoinGeckoData(@Args('daoId', { type: () => String }) daoId: string) {
     const projectFound : Project = await this.projectsService.findOne(daoId);
     const url = 'https://api.coingecko.com/api/v3/coins/'+ projectFound.token;
