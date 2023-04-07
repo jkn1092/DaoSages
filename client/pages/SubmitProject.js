@@ -1,173 +1,52 @@
-import Head from 'next/head'
 import Layout from "@/components/Layout/Layout";
+import ProjectForm from "@/components/Project/ProjectForm";
 import {useAccount, useSigner} from "wagmi";
-import {
-    Button,
-    Flex,
-    FormControl,
-    FormLabel,
-    Heading,
-    Input,
-    Stack, Textarea, useColorModeValue, useToast
-} from "@chakra-ui/react";
+import {useEffect, useState} from "react";
 import {ethers} from "ethers";
-import {useState} from "react";
-import { useMutation } from '@apollo/client';
-import {contractDaoAddress, abiDao} from "@/constants";
-import {REQUEST} from "@/services/graphql";
+import {abiDao, contractDaoAddress} from "@/constants";
+import {Alert} from "@chakra-ui/react";
 
 export default function SubmitProject() {
     const { data: signer } = useSigner();
-    const toast = useToast();
+    const { isConnected } = useAccount();
+    const [hasRole, setHasRole] = useState(false);
 
-    const [name, setName] = useState(null);
-    const [token, setToken] = useState(null);
-    const [codeSource, setCodeSource] = useState(null);
-    const [socialMedia, setSocialMedia] = useState(null);
-    const [email, setEmail] = useState(null);
-    const [description, setDescription] = useState(null);
-    const [submitProject, submitProjectResult] = useMutation(
-        REQUEST.MUTATION.PROJECT.SUBMIT_PROJECT,
-    );
-
-    const submitNewProject = async() => {
-        try {
-            const contract = new ethers.Contract(contractDaoAddress, abiDao, signer)
-            let transaction = await contract.submitProject(name);
-            const receipt = await transaction.wait();
-            const daoId = ethers.BigNumber.from(receipt.events[0].args.id).toNumber();
-
-            await submitProject({
-                variables: {
-                    daoId: daoId.toString(),
-                    name: name,
-                    token: token,
-                    codeSource: codeSource,
-                    socialMedia: socialMedia,
-                    email: email,
-                    description: description
-                },
-            });
-
-            if (submitProjectResult.error) {
-                toast({
-                    title: 'Error',
-                    description: "An error occured.",
-                    status: 'error',
-                    duration: 9000,
-                    isClosable: true,
-                })
-                console.log(submitProjectResult.error);
+    useEffect(() => {
+        (async function() {
+            if( isConnected ){
+                const contract = new ethers.Contract(contractDaoAddress, abiDao, signer);
+                const roles = await contract.getRoles();
+                if( roles.isFinder || roles.isWise )
+                    setHasRole(true);
             }
-            else
-            {
-                toast({
-                    title: 'Congratulations',
-                    description: "The project has been submitted !",
-                    status: 'success',
-                    duration: 9000,
-                    isClosable: true,
-                })
-            }
+        })();
+    },[isConnected])
+
+    const ShowProjectForm = () => {
+        if( hasRole ){
+            return(
+                <ProjectForm/>
+            )
         }
-        catch(e) {
-            toast({
-                title: 'Error',
-                description: "An error occured.",
-                status: 'error',
-                duration: 9000,
-                isClosable: true,
-            })
+        else
+        {
+            return(
+                <Alert status='warning' width="50%">
+                    Please, mint your Finder Role!
+                </Alert>
+            )
         }
     }
 
     return(
         <Layout>
-            <Flex
-                w={'full'}
-                minH={'100vh'}
-                align={'center'}
-                justify={'center'}>
-                <Stack
-                    spacing={4}
-                    w={'full'}
-                    maxW={'md'}
-                    bg={useColorModeValue('white', 'gray.700')}
-                    boxShadow={'lg'}
-                    p={6}
-                    my={12}>
-                    <Heading lineHeight={1.1} fontSize={{ base: '2xl', sm: '3xl' }}>
-                        Submit Project
-                    </Heading>
-                    <FormControl id="name" isRequired>
-                        <FormLabel>Project Name</FormLabel>
-                        <Input
-                            placeholder="Name"
-                            _placeholder={{ color: 'gray.500' }}
-                            type="text"
-                            onChange={(e) => setName(e.target.value)}
-                        />
-                    </FormControl>
-                    <FormControl id="token" isRequired>
-                        <FormLabel>Token</FormLabel>
-                        <Input
-                            placeholder="Token"
-                            _placeholder={{ color: 'gray.500' }}
-                            type="text"
-                            onChange={(e) => setToken(e.target.value)}
-                        />
-                    </FormControl>
-                    <FormControl id="email">
-                        <FormLabel>Email address</FormLabel>
-                        <Input
-                            placeholder="your-email@example.com"
-                            _placeholder={{ color: 'gray.500' }}
-                            type="email"
-                            onChange={(e) => setEmail(e.target.value)}
-                        />
-                    </FormControl>
-                    <FormControl id="socialMedia">
-                        <FormLabel>Social Media</FormLabel>
-                        <Input
-                            placeholder="@dao..."
-                            _placeholder={{ color: 'gray.500' }}
-                            type="text"
-                            onChange={(e) => setSocialMedia(e.target.value)}
-                        />
-                    </FormControl>
-                    <FormControl id="codeSource">
-                        <FormLabel>Code Source</FormLabel>
-                        <Input
-                            placeholder="Github..."
-                            _placeholder={{ color: 'gray.500' }}
-                            type="text"
-                            onChange={(e) => setCodeSource(e.target.value)}
-                        />
-                    </FormControl>
-                    <FormControl id="description">
-                        <FormLabel>Description</FormLabel>
-                        <Textarea
-                            placeholder="Description"
-                            _placeholder={{ color: 'gray.500' }}
-                            type="text"
-                            onChange={(e) => setDescription(e.target.value)}
-                        />
-                    </FormControl>
-                    <Stack spacing={6} direction={['column', 'row']}>
-                        <Button
-                            bg={'blue.400'}
-                            color={'white'}
-                            w="full"
-                            _hover={{
-                                bg: 'blue.500',
-                            }}
-                            onClick={() => submitNewProject()}
-                        >
-                            Submit
-                        </Button>
-                    </Stack>
-                </Stack>
-            </Flex>
+            { isConnected ?
+                <ShowProjectForm/>
+                :
+                <Alert status='warning' width="50%">
+                    Please, connect your Wallet!
+                </Alert>
+            }
         </Layout>
     )
 }

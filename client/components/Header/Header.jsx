@@ -26,7 +26,7 @@ const Header = () => {
     },[isConnected])
 
     const FinderMenu = () => {
-        if( isFinder || isWise )
+        if( isFinder )
         {
             return(
                 <>
@@ -38,11 +38,24 @@ const Header = () => {
     }
 
     const BrainerMenu = () => {
-        if( isFinder || isWise )
+        if( isBrainer )
         {
             return(
                 <>
-                    <Text><Link href="/">Projects</Link></Text>
+                    <Text><Link href="/GetProjects">Projects</Link></Text>
+                    <Text><Link href="/SubmitProposal">Submit Proposal</Link></Text>
+                </>
+            )
+        }
+    }
+
+    const WiseMenu = () => {
+        if( isWise )
+        {
+            return(
+                <>
+                    <Text><Link href="/SubmitProject">Submit Project</Link></Text>
+                    <Text><Link href="/GetProjects">Projects</Link></Text>
                     <Text><Link href="/SubmitProposal">Submit Proposal</Link></Text>
                 </>
             )
@@ -59,6 +72,8 @@ const Header = () => {
                         <>
                             <Text><Link href="/Profile">Profile</Link></Text>
                             <FinderMenu/>
+                            <BrainerMenu/>
+                            <WiseMenu/>
                             <Text><Link href="/GetProposals">Proposals</Link></Text>
                         </>
                     )

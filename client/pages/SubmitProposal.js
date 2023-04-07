@@ -1,103 +1,53 @@
 import Layout from "@/components/Layout/Layout";
-import {
-    Button,
-    Flex,
-    FormControl,
-    FormLabel,
-    Heading,
-    Input,
-    Stack,
-    Textarea,
-    useColorModeValue, useToast
-} from "@chakra-ui/react";
-import {useSigner} from "wagmi";
-import {useState} from "react";
+import {useAccount, useSigner} from "wagmi";
+import ListProposals from "@/components/Proposal/ListProposals";
+import {Alert} from "@chakra-ui/react";
+import ProposalForm from "@/components/Proposal/ProposalForm";
+import {useEffect, useState} from "react";
 import {ethers} from "ethers";
-import {abiGovernance, contractGovernanceAddress} from "@/constants";
-
+import {abiDao, contractDaoAddress} from "@/constants";
 
 export default function SubmitProposal() {
     const { data: signer } = useSigner();
-    const toast = useToast();
+    const { isConnected } = useAccount();
+    const [hasRole, setHasRole] = useState(false);
 
-    const [name, setName] = useState(null);
-    const [description, setDescription] = useState(null);
+    useEffect(() => {
+        (async function() {
+            if( isConnected ){
+                const contract = new ethers.Contract(contractDaoAddress, abiDao, signer);
+                const roles = await contract.getRoles();
+                if( roles.isFinder || roles.isBrainer || roles.isWise )
+                    setHasRole(true);
+            }
+        })();
+    },[isConnected])
 
-    const submitNewProposal = async() => {
-        try {
-            const contract = new ethers.Contract(contractGovernanceAddress, abiGovernance, signer)
-            await contract.submitProposal(name, description);
-
-            toast({
-                title: 'Congratulations',
-                description: "The proposal has been submitted !",
-                status: 'success',
-                duration: 9000,
-                isClosable: true,
-            })
+    const ShowProposalForm = () => {
+        if( hasRole ){
+            return(
+                    <ProposalForm/>
+            )
         }
-        catch(e) {
-            toast({
-                title: 'Error',
-                description: "An error occured.",
-                status: 'error',
-                duration: 9000,
-                isClosable: true,
-            })
+        else
+        {
+            return(
+                <Alert status='warning' width="50%">
+                    Please, mint your Role!
+                </Alert>
+            )
         }
     }
 
     return(
         <Layout>
-            <Flex
-                w={'full'}
-                minH={'100vh'}
-                align={'center'}
-                justify={'center'}>
-                <Stack
-                    spacing={4}
-                    w={'full'}
-                    maxW={'md'}
-                    bg={useColorModeValue('white', 'gray.700')}
-                    boxShadow={'lg'}
-                    p={6}
-                    my={12}>
-                    <Heading lineHeight={1.1} fontSize={{ base: '2xl', sm: '3xl' }}>
-                        Submit Proposal
-                    </Heading>
-                    <FormControl id="name" isRequired>
-                        <FormLabel>Name</FormLabel>
-                        <Input
-                            placeholder="Name"
-                            _placeholder={{ color: 'gray.500' }}
-                            type="text"
-                            onChange={(e) => setName(e.target.value)}
-                        />
-                    </FormControl>
-                    <FormControl id="description" isRequired>
-                        <FormLabel>Description</FormLabel>
-                        <Textarea
-                            placeholder="Description"
-                            _placeholder={{ color: 'gray.500' }}
-                            type="text"
-                            onChange={(e) => setDescription(e.target.value)}
-                        />
-                    </FormControl>
-                    <Stack spacing={6} direction={['column', 'row']}>
-                        <Button
-                            bg={'blue.400'}
-                            color={'white'}
-                            w="full"
-                            _hover={{
-                                bg: 'blue.500',
-                            }}
-                            onClick={() => submitNewProposal()}
-                        >
-                            Submit
-                        </Button>
-                    </Stack>
-                </Stack>
-            </Flex>
+            { isConnected ?
+                <ShowProposalForm/>
+                :
+                <Alert status='warning' width="50%">
+                    Please, connect your Wallet!
+                </Alert>
+            }
         </Layout>
     )
 }
