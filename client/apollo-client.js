@@ -2,7 +2,7 @@ import {ApolloClient, ApolloLink, from, HttpLink, InMemoryCache} from "@apollo/c
 import {onError} from "@apollo/client/link/error";
 
 const httpLink = new HttpLink({
-    uri: 'http://localhost:3000/graphql',
+    uri: 'http://daosages.herokuapp.com/graphql,
 });
 
 const activityMiddleware = new ApolloLink((operation, forward) => {
