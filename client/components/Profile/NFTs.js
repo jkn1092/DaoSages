@@ -283,11 +283,13 @@ const NFTs = () => {
     }
 
     return(
-        <>
+        <Stack align="center" direction='row'>
             <MintFinder/>
+            <Text>  </Text>
             <MintBrainer/>
+            <Text>  </Text>
             <MintWise/>
-        </>
+        </Stack>
     )
 }
 

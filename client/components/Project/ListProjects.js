@@ -44,7 +44,7 @@ const ListProjects = () => {
                             <Heading size='md'>{item.name}</Heading>
                         </CardHeader>
                         <CardBody>
-                            <Text>{item.owner}</Text>
+                            <Text>{item.description}</Text>
                         </CardBody>
                         <CardFooter>
                             <Button>

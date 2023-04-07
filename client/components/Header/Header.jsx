@@ -25,37 +25,31 @@ const Header = () => {
         })();
     },[isConnected])
 
-    const FinderMenu = () => {
-        if( isFinder )
-        {
-            return(
-                <>
-                    <Text><Link href="/SubmitProject">Submit Project</Link></Text>
-                    <Text><Link href="/SubmitProposal">Submit Proposal</Link></Text>
-                </>
-            )
-        }
-    }
-
-    const BrainerMenu = () => {
-        if( isBrainer )
-        {
-            return(
-                <>
-                    <Text><Link href="/GetProjects">Projects</Link></Text>
-                    <Text><Link href="/SubmitProposal">Submit Proposal</Link></Text>
-                </>
-            )
-        }
-    }
-
-    const WiseMenu = () => {
+    const RoleMenu = () => {
         if( isWise )
         {
             return(
                 <>
                     <Text><Link href="/SubmitProject">Submit Project</Link></Text>
-                    <Text><Link href="/GetProjects">Projects</Link></Text>
+                    <Text>   </Text>
+                    <Text><Link href="/SubmitProposal">Submit Proposal</Link></Text>
+                </>
+            )
+        }
+        else if( isFinder )
+        {
+            return(
+                <>
+                    <Text><Link href="/SubmitProject">Submit Project</Link></Text>
+                    <Text>   </Text>
+                    <Text><Link href="/SubmitProposal">Submit Proposal</Link></Text>
+                </>
+            )
+        }
+        else if( isBrainer )
+        {
+            return(
+                <>
                     <Text><Link href="/SubmitProposal">Submit Proposal</Link></Text>
                 </>
             )
@@ -67,13 +61,16 @@ const Header = () => {
             <Text fontWeight="bold">DAO des Sages</Text>
             <Flex width="30%" justifyContent="space-between" alignItems="center">
                 <Text><Link href="/">Home</Link></Text>
+                <Text>   </Text>
                 { isConnected ?
                     (
                         <>
                             <Text><Link href="/Profile">Profile</Link></Text>
-                            <FinderMenu/>
-                            <BrainerMenu/>
-                            <WiseMenu/>
+                            <Text>  </Text>
+                            <Text><Link href="/GetProjects">Projects</Link></Text>
+                            <Text>  </Text>
+                            <RoleMenu/>
+                            <Text>   </Text>
                             <Text><Link href="/GetProposals">Proposals</Link></Text>
                         </>
                     )
