@@ -105,7 +105,7 @@ export default function Home() {
                       </Heading>
                       <Text fontSize={{ base: 'md', lg: 'lg' }} color={'gray.500'}>
                           A DAO for auditing blockchain project with a transparent and automated process that verifies
-                          the accuracy and integrity of the project's transactions and data.
+                          the accuracy and integrity of the projects transactions and data.
                       </Text>
                       <Stack direction={{ base: 'column', md: 'row' }} spacing={4}>
                           <FinderButton/>
