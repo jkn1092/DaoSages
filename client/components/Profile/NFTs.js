@@ -6,10 +6,7 @@ import {Box, Button, Center, Stack, Text, useColorModeValue, useToast} from "@ch
 import Image from "next/image";
 import axios from "axios";
 
-
 const NFTs = () => {
-    const provider = useProvider()
-
     const { data: signer } = useSigner();
     const { address } = useAccount();
     const toast = useToast();
@@ -20,33 +17,32 @@ const NFTs = () => {
 
     useEffect(() => {
         (async function() {
-            const contract = new ethers.Contract(contractDaoAddress, abiDao, signer);
-            const roles = await contract.getRoles();
-            if( roles.isFinder )
+            if( signer )
             {
-                const tokenURI = await contract.tokenFinderURI();
-                let response = await axios.get(tokenURI)
-                setIsFinder(response.data.image);
+                const contract = new ethers.Contract(contractDaoAddress, abiDao, signer);
+                const roles = await contract.getRoles();
+                if (roles.isFinder) {
+                    const tokenURI = await contract.tokenFinderURI();
+                    let response = await axios.get(tokenURI)
+                    setIsFinder(response.data.image);
+                }
+                if (roles.isBrainer) {
+                    const tokenURI = await contract.tokenBrainerURI();
+                    let response = await axios.get(tokenURI)
+                    setIsBrainer(response.data.image);
+                }
+                if (roles.isWise) {
+                    const tokenURI = await contract.tokenWiseURI();
+                    let response = await axios.get(tokenURI)
+                    setIsWise(response.data.image);
+                }
             }
-            if( roles.isBrainer )
-            {
-                const tokenURI = await contract.tokenBrainerURI();
-                let response = await axios.get(tokenURI)
-                setIsBrainer(response.data.image);
-            }
-            if( roles.isWise )
-            {
-                const tokenURI = await contract.tokenWiseURI();
-                let response = await axios.get(tokenURI)
-                setIsWise(response.data.image);
-            }
-
         })();
-    },[provider])
+    },[signer])
 
     const white = useColorModeValue('white', 'gray.800')
 
-    const MintFinder = () => {
+    const MintFinderDisplay = () => {
         if( isFinder )
         {
             const nftMinted = isFinder;
@@ -110,7 +106,7 @@ const NFTs = () => {
         }
     }
 
-    const MintBrainer = () => {
+    const MintBrainerDisplay = () => {
         if( isBrainer )
         {
             const nftMinted = isBrainer;
@@ -174,7 +170,7 @@ const NFTs = () => {
         }
     }
 
-    const MintWise = () => {
+    const MintWiseDisplay = () => {
         if( isWise != null )
         {
             const nftMinted = isWise;
@@ -284,11 +280,11 @@ const NFTs = () => {
 
     return(
         <Stack align="center" direction='row'>
-            <MintFinder/>
+            <MintFinderDisplay/>
             <Text>  </Text>
-            <MintBrainer/>
+            <MintBrainerDisplay/>
             <Text>  </Text>
-            <MintWise/>
+            <MintWiseDisplay/>
         </Stack>
     )
 }
