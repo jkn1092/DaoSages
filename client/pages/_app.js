@@ -2,7 +2,7 @@ import '@/styles/globals.css'
 import '@rainbow-me/rainbowkit/styles.css';
 
 import {configureChains, createClient, WagmiConfig} from "wagmi";
-import { hardhat } from 'wagmi/chains';
+import { polygonMumbai } from 'wagmi/chains'
 import { alchemyProvider } from 'wagmi/providers/alchemy';
 import { publicProvider } from 'wagmi/providers/public';
 import {getDefaultWallets , RainbowKitProvider} from "@rainbow-me/rainbowkit";
@@ -11,7 +11,7 @@ import {ApolloProvider} from "@apollo/client";
 import client from "@/apollo-client";
 
 const { chains, provider } = configureChains(
-    [hardhat],
+    [polygonMumbai],
     [
       alchemyProvider({ apiKey: process.env.ALCHEMY_ID }),
       publicProvider()
