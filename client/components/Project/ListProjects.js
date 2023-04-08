@@ -1,4 +1,5 @@
 import {
+    Box,
     Button,
     Card,
     CardBody,
@@ -38,38 +39,46 @@ const ListProjects = () => {
         if( projects?.length > 0 )
         {
             return projects.map( item => {
+                const address = item.owner.substring(0, 5) + '...' + item.owner.substring(item.owner.length - 4);
                 return(
-                    <Card key={item.projectId}>
-                        <CardHeader>
-                            <Heading size='md'>{item.name}</Heading>
-                        </CardHeader>
-                        <CardBody>
-                            <Text>{item.description}</Text>
-                        </CardBody>
-                        <CardFooter>
-                            <Button>
-                                <Link
-                                    href={{
-                                        pathname: '/GetProject',
-                                        query: {
-                                            id: item.projectId
-                                        }
-                                    }}
-                                >
-                                    Details
-                                </Link>
-                            </Button>
-                        </CardFooter>
-                    </Card>
+                    <Box
+                        key={item.projectId}
+                        maxW={{ base: 'full', md: 'full' }}
+                        w={'full'}
+                        borderWidth="1px"
+                        borderRadius="lg"
+                        overflow="hidden"
+                        p={5}>
+                        <Card key={item.projectId}>
+                            <CardHeader>
+                                <Heading size='md'>{item.name}</Heading>
+                            </CardHeader>
+                            <CardBody>
+                                <Text color={'blue.400'} >owner: {address}</Text>
+                            </CardBody>
+                            <CardFooter>
+                                <Button>
+                                    <Link
+                                        href={{
+                                            pathname: '/GetProject',
+                                            query: {
+                                                id: item.projectId
+                                            }
+                                        }}
+                                    >
+                                        Details
+                                    </Link>
+                                </Button>
+                            </CardFooter>
+                        </Card>
+                    </Box>
                 )
             })
         }
     }
 
     return(
-        <SimpleGrid spacing={4} templateColumns='repeat(auto-fill, minmax(200px, 1fr))'>
-            <ListProjectsSubmitted/>
-        </SimpleGrid>
+        <ListProjectsSubmitted/>
     )
 }
 

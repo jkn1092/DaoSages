@@ -46,37 +46,46 @@ export default function ListProposals() {
         {
             return proposals.map( item => {
                 return(
-                    <Card key={item.proposalId}>
-                        <CardHeader>
-                            <Heading size='md'>{item.name}</Heading>
-                        </CardHeader>
-                        <CardBody>
-                            <Stack divider={<StackDivider />} spacing='4'>
-                                <Box>
-                                    <Heading size='xs' textTransform='uppercase'>
-                                        Description
-                                    </Heading>
-                                    <Text pt='2' fontSize='sm'>
-                                        {item.description}
-                                    </Text>
-                                </Box>
-                            </Stack>
-                        </CardBody>
-                        <CardFooter>
-                            <Button>
-                                <Link
-                                    href={{
-                                        pathname: '/GetProposal',
-                                        query: {
-                                            id: item.proposalId
-                                        }
-                                    }}
-                                >
-                                    Details
-                                </Link>
-                            </Button>
-                        </CardFooter>
-                    </Card>
+                    <Box
+                        key={item.proposalId}
+                        maxW={{ base: 'full', md: 'full' }}
+                        w={'full'}
+                        borderWidth="1px"
+                        borderRadius="lg"
+                        overflow="hidden"
+                        p={5}>
+                        <Card key={item.proposalId}>
+                            <CardHeader>
+                                <Heading size='md'>{item.name}</Heading>
+                            </CardHeader>
+                            <CardBody>
+                                <Stack divider={<StackDivider />} spacing='4'>
+                                    <Box>
+                                        <Heading size='xs' textTransform='uppercase'>
+                                            Description
+                                        </Heading>
+                                        <Text pt='2' fontSize='sm'>
+                                            {item.description}
+                                        </Text>
+                                    </Box>
+                                </Stack>
+                            </CardBody>
+                            <CardFooter>
+                                <Button>
+                                    <Link
+                                        href={{
+                                            pathname: '/GetProposal',
+                                            query: {
+                                                id: item.proposalId
+                                            }
+                                        }}
+                                    >
+                                        Details
+                                    </Link>
+                                </Button>
+                            </CardFooter>
+                        </Card>
+                    </Box>
                 )
             })
         }
