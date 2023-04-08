@@ -1,6 +1,5 @@
 import Layout from "@/components/Layout/Layout";
 import {useAccount, useSigner} from "wagmi";
-import ListProposals from "@/components/Proposal/ListProposals";
 import {Alert} from "@chakra-ui/react";
 import ProposalForm from "@/components/Proposal/ProposalForm";
 import {useEffect, useState} from "react";

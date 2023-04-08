@@ -1,7 +1,7 @@
 import { Flex, Text } from '@chakra-ui/react';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import Link from 'next/link';
-import {useAccount, useProvider, useSigner} from "wagmi";
+import {createStorage, useAccount, useProvider, useSigner} from "wagmi";
 import {useEffect, useState} from "react";
 import {ethers} from "ethers";
 import {abiDao, contractDaoAddress} from "@/constants";
@@ -15,7 +15,7 @@ const Header = () => {
 
     useEffect(() => {
         (async function() {
-            if( isConnected ){
+            if( signer ){
                 const contract = new ethers.Contract(contractDaoAddress, abiDao, signer);
                 const roles = await contract.getRoles();
                 setIsFinder(roles.isFinder);
@@ -23,7 +23,7 @@ const Header = () => {
                 setIsWise(roles.isWise);
             }
         })();
-    },[isConnected])
+    },[signer])
 
     const RoleMenu = () => {
         if( isWise )
@@ -62,7 +62,7 @@ const Header = () => {
             <Flex width="30%" justifyContent="space-between" alignItems="center">
                 <Text><Link href="/">Home</Link></Text>
                 <Text>   </Text>
-                { isConnected ?
+               { isConnected ?
                     (
                         <>
                             <Text><Link href="/Profile">Profile</Link></Text>

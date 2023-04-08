@@ -19,7 +19,7 @@ export default function Home() {
 
     useEffect(() => {
         (async function() {
-            if( isConnected ){
+            if( signer ){
                 const contract = new ethers.Contract(contractDaoAddress, abiDao, signer);
                 const roles = await contract.getRoles();
                 setIsFinder(roles.isFinder);
@@ -27,7 +27,7 @@ export default function Home() {
                 setIsWise(roles.isWise);
             }
         })();
-    },[isConnected])
+    },[signer])
 
     const FinderButton = () => {
         if( isFinder || isWise )
