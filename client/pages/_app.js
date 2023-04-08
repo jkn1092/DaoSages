@@ -27,9 +27,6 @@ const wagmiClient = createClient({
     autoConnect: true,
     connectors,
     provider,
-/*    isFinder : false,
-    isBrainer : false,
-    isWise : false*/
 })
 
 export default function App({ Component, pageProps }) {
