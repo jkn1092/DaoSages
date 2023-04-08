@@ -2,11 +2,12 @@ import Head from 'next/head'
 import {useAccount, useSigner} from "wagmi";
 import Layout from "@/components/Layout/Layout";
 import {Alert, AlertIcon, Button, Flex, Heading, Stack, Text, Image, useBreakpointValue} from "@chakra-ui/react";
-import RoleCarousel from "@/components/Home/RoleCarousel";
 import {ethers} from "ethers";
 import {abiDao, contractDaoAddress} from "@/constants";
 import Link from "next/link";
 import {useEffect, useState} from "react";
+import RoleCarousel from "@/components/Home/RoleCarousel";
+import RoadMap from "@/components/Home/RoadMap";
 
 export default function Home() {
 
@@ -129,6 +130,7 @@ export default function Home() {
               </Flex>
           </Stack>
         <RoleCarousel/>
+        <RoadMap/>
       </Layout>
     </>
   )
