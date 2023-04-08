@@ -39,7 +39,7 @@ const roadMapContents = [
     },
     {
         'name':"Phase 5",
-        'description':"Launch MainNet",
+        'description':"Launch MainNet.",
         'icon':FcManager
     },
 ]
