@@ -40,13 +40,13 @@ contract DAOSage is Ownable, ERC721URIStorage {
         uint nbScore;                           // The number of auditors who have audited the project
     }
 
-    // The number of registered addresses
+    // The number of registered addresses. Public for DAOSageGovernance access.
     uint public nbRegisteredAddress;
 
-    // Mapping of participant addresses to their roles
-    mapping(address => Participant) public participants;
+    // Mapping of participant addresses to their roles.
+    mapping(address => Participant) private participants;
 
-    // Array of all projects
+    // Array of all projects. Public for testing access.
     Project[] public projects;
 
     /// @dev Define an event to log when a new project is submitted
@@ -130,7 +130,7 @@ contract DAOSage is Ownable, ERC721URIStorage {
      * @return isBrainer boolean indicating whether the calling address is a brainer.
      * @return isWise boolean indicating whether the calling address is a wiseman.
      */
-    function getRoles() public view returns (bool isFinder, bool isBrainer, bool isWise) {
+    function getRoles() external view returns (bool isFinder, bool isBrainer, bool isWise) {
         uint tokenFinder = participants[msg.sender].tokenFinder;
         uint tokenBrainer = participants[msg.sender].tokenBrainer;
         uint tokenWisemen = participants[msg.sender].tokenWisemen;
@@ -149,7 +149,7 @@ contract DAOSage is Ownable, ERC721URIStorage {
      * @dev Returns the URI of the calling address's finder token.
      * @return string containing the URI of a token
      */
-    function tokenFinderURI() public view returns(string memory) {
+    function tokenFinderURI() external view returns(string memory) {
         require(_exists(participants[msg.sender].tokenFinder), 'Finder not mint');
         return tokenURI(participants[msg.sender].tokenFinder);
     }
@@ -158,7 +158,7 @@ contract DAOSage is Ownable, ERC721URIStorage {
      * @dev Returns the URI of the calling address's brainer token.
      * @return string containing the URI of a token
      */
-    function tokenBrainerURI() public view returns(string memory) {
+    function tokenBrainerURI() external view returns(string memory) {
         require(_exists(participants[msg.sender].tokenBrainer), 'Brainer not mint');
         return tokenURI(participants[msg.sender].tokenBrainer);
     }
@@ -167,7 +167,7 @@ contract DAOSage is Ownable, ERC721URIStorage {
      * @dev Returns the URI of the calling address's wisemen token.
      * @return string containing the URI of a token
      */
-    function tokenWiseURI() public view returns(string memory) {
+    function tokenWiseURI() external view returns(string memory) {
         require(_exists(participants[msg.sender].tokenWisemen), 'Wise not mint');
         return tokenURI(participants[msg.sender].tokenWisemen);
     }
@@ -178,7 +178,7 @@ contract DAOSage is Ownable, ERC721URIStorage {
      * Emits a ProjectSubmitted event.
      * @param _name The name of the project to be submitted.
      */
-    function submitProject(string memory _name) public onlyFinders {
+    function submitProject(string calldata _name) external onlyFinders {
         require(bytes(_name).length > 0, "Project name must not be empty.");
 
         Project storage newProject = projects.push();
@@ -195,7 +195,7 @@ contract DAOSage is Ownable, ERC721URIStorage {
      * @param _index The id of the project to be audited.
      * @param _grade The grade of the project to be audited.
      */
-    function auditProject(uint256 _index, uint8 _grade) public onlyBrainers {
+    function auditProject(uint256 _index, uint8 _grade) external onlyBrainers {
         require(_index >= 0 && _index < projects.length, "Invalid project index.");
         require(_grade >= 0 && _grade <= 10, "Grade must be between 1 and 10.");
 
@@ -222,7 +222,7 @@ contract DAOSage is Ownable, ERC721URIStorage {
      * @param _index The id of the project.
      * @return audit uint containing the audit of the project
      */
-    function getAudit(uint256 _index) public view returns(uint audit) {
+    function getAudit(uint256 _index) external view returns(uint audit) {
         require(_index >= 0 && _index < projects.length, "Invalid project index.");
 
         if( projects[_index].nbScore > 0 )
@@ -234,7 +234,7 @@ contract DAOSage is Ownable, ERC721URIStorage {
      * @param _voter The address of the voter.
      * @return weight uint containing the weight of the voter
      */
-    function getVoteWeight(address _voter) public view returns(uint8 weight){
+    function getVoteWeight(address _voter) external view returns(uint8 weight){
         if( _exists(participants[_voter].tokenWisemen) )
             weight = 4;
         else if( _exists(participants[_voter].tokenBrainer) )
@@ -248,7 +248,7 @@ contract DAOSage is Ownable, ERC721URIStorage {
      * @param _participant The address of the user.
      * @return boolean whether the user is a participant
      */
-    function isParticipant(address _participant) public view returns(bool){
+    function isParticipant(address _participant) external view returns(bool){
         return(_exists(participants[_participant].tokenFinder) || _exists(participants[_participant].tokenBrainer) ||
         _exists(participants[_participant].tokenWisemen));
     }

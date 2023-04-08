@@ -29,13 +29,13 @@ contract DAOSageGovernance is Ownable{
     }
 
     // Instance of DAOSage contract
-    DAOSage daoSage;
+    DAOSage private daoSage;
 
-    // Array to store all proposals
+    // Array to store all proposals. Public for testing access.
     Proposal[] public proposals;
 
     // Mapping to store the votes of each participant for each proposal
-    mapping(uint => mapping(address => Vote)) proposalsVoted;
+    mapping(uint => mapping(address => Vote)) private proposalsVoted;
 
     /// @dev Define an event to log when a new proposal is submitted
     event ProposalSubmitted(address owner, uint id, string name, string description);
@@ -67,7 +67,7 @@ contract DAOSageGovernance is Ownable{
      * @param _name The name of the proposal.
      * @param _desc The description of the proposal.
      */
-    function submitProposal(string calldata _name, string calldata _desc) public onlyParticipants {
+    function submitProposal(string calldata _name, string calldata _desc) external onlyParticipants {
         require(bytes(_name).length > 0 && bytes(_desc).length > 0,
             "Proposal name and description must not be empty.");
 
@@ -85,7 +85,7 @@ contract DAOSageGovernance is Ownable{
      * @param _id The ID of the proposal.
      * @return The proposal details.
      */
-    function getProposal(uint _id) public view returns(Proposal memory) {
+    function getProposal(uint _id) external view returns(Proposal memory) {
         require(_id < proposals.length, 'Proposal not found');
 
         return proposals[_id];
@@ -98,7 +98,7 @@ contract DAOSageGovernance is Ownable{
      * Emits a ProposalValidated event if proposal is validated.
      * @param _id The ID of the proposal.
      */
-    function submitVote(uint _id) public onlyParticipants {
+    function submitVote(uint _id) external onlyParticipants {
         require(_id < proposals.length, 'Proposal not found');
         require(!proposals[_id].validated, 'Already validated');
         require(!proposalsVoted[_id][msg.sender].voted, 'Already submitted');
@@ -123,7 +123,7 @@ contract DAOSageGovernance is Ownable{
      * Emits a VoteSubmitted event.
      * @param _id The ID of the proposal.
      */
-    function withdrawVote(uint _id) public onlyParticipants {
+    function withdrawVote(uint _id) external onlyParticipants {
         require(_id < proposals.length, 'Proposal not found');
         require(proposalsVoted[_id][msg.sender].voted, 'Already withdrawn');
 
