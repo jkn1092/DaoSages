@@ -110,7 +110,11 @@ export default function Home() {
                       <Stack direction={{ base: 'column', md: 'row' }} spacing={4}>
                           <FinderButton/>
                           <AuditButton/>
-                          <Button rounded={'full'}>How It Works</Button>
+                          <Button rounded={'full'}>
+                              <Link href="/HowItWorks">
+                                  How It Works
+                              </Link>
+                          </Button>
                       </Stack>
                   </Stack>
               </Flex>
