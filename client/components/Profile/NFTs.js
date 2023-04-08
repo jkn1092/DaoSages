@@ -91,7 +91,7 @@ const NFTs = () => {
                         </Box>
                         <Stack pt={10} align={'center'}>
                             <Text textTransform={'uppercase'}>
-                                <Button colorScheme='teal' isDisabled={true}>Minted</Button>
+                                <Button colorScheme='teal' isDisabled={true}>Minted Finder</Button>
                             </Text>
                         </Stack>
                     </Box>
@@ -155,7 +155,7 @@ const NFTs = () => {
                         </Box>
                         <Stack pt={10} align={'center'}>
                             <Text textTransform={'uppercase'}>
-                                <Button colorScheme='teal' isDisabled={true}>Minted</Button>
+                                <Button colorScheme='teal' isDisabled={true}>Minted Brainer</Button>
                             </Text>
                         </Stack>
                     </Box>
@@ -219,7 +219,7 @@ const NFTs = () => {
                         </Box>
                         <Stack pt={10} align={'center'}>
                             <Text textTransform={'uppercase'}>
-                                <Button colorScheme='teal' isDisabled={true}>Minted</Button>
+                                <Button colorScheme='teal' isDisabled={true}>Minted Wisemen</Button>
                             </Text>
                         </Stack>
                     </Box>
