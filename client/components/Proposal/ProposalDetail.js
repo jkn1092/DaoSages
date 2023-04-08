@@ -30,6 +30,10 @@ export default function ProposalDetail() {
     const submitWithdraw = async() => {
         try {
             const contract = new ethers.Contract(contractGovernanceAddress, abiGovernance, signer)
+            contract.on("ProposalValidated", (to, amount, from) => {
+                console.log(to, amount, from);
+            });
+
             await contract.withdrawVote(proposalId);
             setVoted(false);
 
