@@ -27,12 +27,14 @@ export default function ProjectDetail() {
     const searchParams = useSearchParams();
     let projectId = searchParams.get('id');
 
+    const { isConnected } = useAccount();
     const provider = useProvider()
     const { data: signer } = useSigner();
     const { address } = useAccount();
     const toast = useToast();
     const [daoAudit, setDaoAudit] = useState();
     const [audit, setAudit] = useState();
+    const [hasRole, setHasRole] = useState(false);
 
     const getProjectResult = useQuery(REQUEST.QUERY.PROJECT.GET_PROJECT_ID,{
         variables: {
@@ -95,6 +97,17 @@ export default function ProjectDetail() {
         })();
     },[projectId])
 
+    useEffect(() => {
+        (async function() {
+            if( isConnected ){
+                const contract = new ethers.Contract(contractDaoAddress, abiDao, signer);
+                const roles = await contract.getRoles();
+                if( roles.isBrainer || roles.isWise )
+                    setHasRole(true);
+            }
+        })();
+    },[isConnected])
+
 
     const CoinGeckoInput = () => {
         if( coinGeckoFetched !== null )
@@ -137,16 +150,21 @@ export default function ProjectDetail() {
     }
 
     const AuditInput = () => {
-        if( projectId !== null )
+        if( projectId !== null && hasRole )
         {
             return(
-                <NumberInput defaultValue={audit} min={0} max={10} onChange={(value) => setAudit(value)}>
-                    <NumberInputField/>
-                    <NumberInputStepper>
-                        <NumberIncrementStepper />
-                        <NumberDecrementStepper />
-                    </NumberInputStepper>
-                </NumberInput>
+                <>
+                    <NumberInput defaultValue={audit} min={0} max={10} onChange={(value) => setAudit(value)}>
+                        <NumberInputField/>
+                        <NumberInputStepper>
+                            <NumberIncrementStepper />
+                            <NumberDecrementStepper />
+                        </NumberInputStepper>
+                    </NumberInput>
+                    <Button colorScheme='teal' size='md' onClick={() => submitAudit()}>
+                        Audit
+                    </Button>
+                </>
             )
         }
     }
@@ -224,9 +242,6 @@ export default function ProjectDetail() {
                                     </List>
                                 </Box>
                                 <AuditInput/>
-                                <Button colorScheme='teal' size='md' onClick={() => submitAudit()}>
-                                    Audit
-                                </Button>
                             </Stack>
                         </SimpleGrid>
                     </Container>
