@@ -44,6 +44,28 @@ export const REQUEST = {
                         public_interest_score
                     }
                 }`
+        },
+        ROLES: {
+            GET_ADDRESS: gql`
+                query GetAddress {
+                    GetAddress @client
+                }
+            `,
+            IS_FINDER: gql`
+                query IsFinder {
+                    IsFinder @client
+                }
+            `,
+            IS_BRAINER: gql`
+                query IsBrainer {
+                    IsBrainer @client
+                }
+            `,
+            IS_WISE: gql`
+                query IsWise {
+                    IsWise @client
+                }
+            `,
         }
     },
     MUTATION: {

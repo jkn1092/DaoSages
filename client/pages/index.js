@@ -12,7 +12,6 @@ import RoadMap from "@/components/Home/RoadMap";
 export default function Home() {
 
     const { data: signer } = useSigner();
-    const { address, isConnected } = useAccount()
     const [isFinder, setIsFinder] = useState(false);
     const [isBrainer, setIsBrainer] = useState(false);
     const [isWise, setIsWise] = useState(false);

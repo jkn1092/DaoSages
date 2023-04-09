@@ -1,5 +1,7 @@
 import {ApolloClient, ApolloLink, from, HttpLink, InMemoryCache} from "@apollo/client";
 import {onError} from "@apollo/client/link/error";
+import {typeDefs} from "@/models/typeDefs";
+import {cache} from "@/models/cache";
 
 const httpLink = new HttpLink({
     uri: 'https://daosages.herokuapp.com/graphql',
@@ -7,6 +9,7 @@ const httpLink = new HttpLink({
 
 const activityMiddleware = new ApolloLink((operation, forward) => {
     // add the recent-activity custom header to the headers
+    const token = localStorage.getItem('getAddress');
     operation.setContext(({ headers = {} }) => ({
         headers: {
             ...headers,
@@ -30,7 +33,8 @@ const errorLink = onError(({ networkError }) => {
 
 const client = new ApolloClient({
     link: from([errorLink, activityMiddleware, httpLink]),
-    cache: new InMemoryCache(),
+    cache,
+    typeDefs,
     fetch
 });
 
