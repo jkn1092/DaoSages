@@ -334,7 +334,7 @@ describe("DAOSage Contract", function () {
     });
 
     // Define test cases for the getVoteWeight function
-    describe.only("isParticipant", function () {
+    describe("isParticipant", function () {
         describe("get isParticipant for wisemen", function () {
             it("should return uint true", async function () {
                 const value = await dao.isParticipant(wise.address);
@@ -369,4 +369,35 @@ describe("DAOSage Contract", function () {
             });
         })
     });
+
+    // Define test cases for the withdrawFunds function
+    describe("withdrawFunds", function () {
+        describe("withdraw as owner", function () {
+            it("should withdraw and balance equal 0", async function () {
+                await dao.withdrawFunds();
+                const balanceAfter = await ethers.provider.getBalance(dao.address);
+                expect(balanceAfter).to.be.equal(0);
+            });
+        })
+        describe("withdraw as visitor", function () {
+            it("should revert with address incorrect", async function () {
+                await expect(dao.connect(visitor).withdrawFunds()).to.be.revertedWith("Ownable: caller is not the owner");
+            });
+        })
+        describe("withdraw as finder", function () {
+            it("should revert with address incorrect", async function () {
+                await expect(dao.connect(finder).withdrawFunds()).to.be.revertedWith("Ownable: caller is not the owner");
+            });
+        })
+        describe("withdraw as brainer", function () {
+            it("should revert with address incorrect", async function () {
+                await expect(dao.connect(brainer).withdrawFunds()).to.be.revertedWith("Ownable: caller is not the owner");
+            });
+        })
+        describe("withdraw as wisemen", function () {
+            it("should revert with address incorrect", async function () {
+                await expect(dao.connect(wise).withdrawFunds()).to.be.revertedWith("Ownable: caller is not the owner");
+            });
+        })
+    })
 });

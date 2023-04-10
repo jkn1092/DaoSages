@@ -258,4 +258,11 @@ contract DAOSage is Ownable, ERC721URIStorage {
         return(_exists(participants[_participant].tokenFinder) || _exists(participants[_participant].tokenBrainer) ||
         _exists(participants[_participant].tokenWisemen));
     }
+
+    /**
+     * @dev Function to withdraw the contract balance.
+     */
+    function withdrawFunds() external onlyOwner{
+        payable(msg.sender).transfer(address(this).balance);
+    }
 }
