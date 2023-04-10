@@ -12,7 +12,7 @@ import {ApolloProvider} from "@apollo/client";
 import client from "@/apollo-client";
 
 const { chains, provider } = configureChains(
-    [goerli],
+    [polygonMumbai],
     [
         infuraProvider({ apiKey: process.env.INFURA_ID }),
         alchemyProvider({ apiKey: process.env.ALCHEMY_ID }),
