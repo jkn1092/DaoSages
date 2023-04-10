@@ -3,7 +3,10 @@
 A DAO for auditing blockchain project with a transparent and automated process that verifies the accuracy and integrity of the projects transactions and data.
 
 ## Deployment
-https://dao-sages.vercel.app/
+
+https://dao-sages-goerli.vercel.app/
+
+https://dao-sages.vercel.app/ (En raison de problème technique avec le RPC d'Alchemy, ce lien ne fonctionne plus pour le moment)
 
 DAOSage Contract : https://mumbai.polygonscan.com/address/0xf6446e926Fa3aa2282eC9c8D72C06D459FBF80F8
 DAOSageGovernance Contract : https://mumbai.polygonscan.com/address/0xca561fC618ad204734aD6B911DE1AE80c4a6D048
