@@ -1,5 +1,6 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
+const {address} = require("hardhat/internal/core/config/config-validation");
 
 describe("DAOSage Contract", function () {
     let dao, admin, wise, brainer, finder, visitor;
@@ -46,6 +47,13 @@ describe("DAOSage Contract", function () {
             });
         })
 
+        describe("mint finder as zero address", function () {
+            it("should revert with address incorrect", async function () {
+                const cost = ethers.utils.parseEther("0.01");
+                await expect(dao.connect(finder).mintFinder(ethers.constants.AddressZero, {value: cost})).to.be.revertedWith("address incorrect");
+            });
+        })
+
         describe("mint finder as finder", function () {
             it("should revert with already minted finder", async function () {
                 const cost = ethers.utils.parseEther("0.01");
@@ -55,7 +63,7 @@ describe("DAOSage Contract", function () {
 
         describe("mint finder as visitor with no eth", function () {
             it("should revert with insufficient eth", async function () {
-                await expect(dao.connect(visitor).mintFinder(visitor.address)).to.be.revertedWith("insufficient eth");
+                await expect(dao.connect(visitor).mintFinder(visitor.address)).to.be.revertedWith("wrong amount of ether");
             });
         })
 
@@ -92,6 +100,13 @@ describe("DAOSage Contract", function () {
             });
         })
 
+        describe("mint brainer as zero address", function () {
+            it("should revert with address incorrect", async function () {
+                const cost = ethers.utils.parseEther("0.02");
+                await expect(dao.connect(brainer).mintBrainer(ethers.constants.AddressZero, {value: cost})).to.be.revertedWith("address incorrect");
+            });
+        })
+
         describe("mint brainer as brainer", function () {
             it("should revert with already minted brainer", async function () {
                 const cost = ethers.utils.parseEther("0.02");
@@ -101,7 +116,7 @@ describe("DAOSage Contract", function () {
 
         describe("mint finder as visitor with no eth", function () {
             it("should revert with insufficient eth", async function () {
-                await expect(dao.connect(visitor).mintBrainer(visitor.address)).to.be.revertedWith("insufficient eth");
+                await expect(dao.connect(visitor).mintBrainer(visitor.address)).to.be.revertedWith("wrong amount of ether");
             });
         })
 
@@ -126,6 +141,12 @@ describe("DAOSage Contract", function () {
                 expect(result).to.be.not.undefined;
             });
         });
+
+        describe("mint wisemen as zero address", function () {
+            it("should revert with address incorrect", async function () {
+                await expect(dao.connect(admin).mintWisemen(ethers.constants.AddressZero)).to.be.revertedWith("address incorrect");
+            });
+        })
 
         describe("mint wisemen as wisemen", function () {
             it("should revert with already minted wisemen", async function () {
@@ -272,6 +293,79 @@ describe("DAOSage Contract", function () {
                 await dao.submitProject(projectName);
                 const audit = await dao.getAudit(0);
                 expect(audit).to.equal(0);
+            });
+        })
+    });
+
+    // Define test cases for the getVoteWeight function
+    describe("getVoteWeight", function () {
+        describe("get weight for wisemen", function () {
+            it("should return uint 4", async function () {
+                const weight = await dao.getVoteWeight(wise.address);
+                expect(weight).to.be.equal(4);
+            });
+        })
+
+        describe("get weight for brainer", function () {
+            it("should return uint 2", async function () {
+                const weight = await dao.getVoteWeight(brainer.address);
+                expect(weight).to.be.equal(2);
+            });
+        })
+
+        describe("get weight for finder", function () {
+            it("should return uint 1", async function () {
+                const weight = await dao.getVoteWeight(finder.address);
+                expect(weight).to.be.equal(1);
+            });
+        })
+
+        describe("get weight for zero address", function () {
+            it("should revert with address incorrect", async function () {
+                await expect(dao.getVoteWeight(ethers.constants.AddressZero)).to.be.revertedWith("address incorrect");
+            });
+        })
+
+        describe("get weight for visitor", function () {
+            it("should revert with not participant", async function () {
+                await expect(dao.getVoteWeight(visitor.address)).to.be.revertedWith("not participant");
+            });
+        })
+    });
+
+    // Define test cases for the getVoteWeight function
+    describe.only("isParticipant", function () {
+        describe("get isParticipant for wisemen", function () {
+            it("should return uint true", async function () {
+                const value = await dao.isParticipant(wise.address);
+                expect(value).to.be.equal(true);
+            });
+        })
+
+        describe("get isParticipant for brainer", function () {
+            it("should return uint true", async function () {
+                const value = await dao.isParticipant(brainer.address);
+                expect(value).to.be.equal(true);
+            });
+        })
+
+        describe("get isParticipant for finder", function () {
+            it("should return uint true", async function () {
+                const value = await dao.isParticipant(finder.address);
+                expect(value).to.be.equal(true);
+            });
+        })
+
+        describe("get isParticipant for visitor", function () {
+            it("should return uint false", async function () {
+                const value = await dao.isParticipant(visitor.address);
+                expect(value).to.be.equal(false);
+            });
+        })
+
+        describe("get weight for zero address", function () {
+            it("should revert with address incorrect", async function () {
+                await expect(dao.isParticipant(ethers.constants.AddressZero)).to.be.revertedWith("address incorrect");
             });
         })
     });
