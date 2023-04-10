@@ -23,7 +23,7 @@ async function main() {
   await daoGovernance.connect(signer).submitProposal("Script deployment proposal",
       "This proposal has been added through the script during deployment.");
 
-  const variables = {
+  /*const variables = {
     daoId: '0',
     name: "Alyra",
     token: "ALY",
@@ -68,7 +68,7 @@ async function main() {
   })
   .catch(error => {
     console.log(error);
-  });
+  });*/
 }
 
 // We recommend this pattern to be able to use async/await everywhere
