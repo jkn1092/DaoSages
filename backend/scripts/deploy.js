@@ -19,13 +19,9 @@ async function main() {
   );
 
   await daoSage.connect(signer).submitProject("Alyra");
-  const project = await daoSage.projects(0);
-  console.log(project);
 
   await daoGovernance.connect(signer).submitProposal("Script deployment proposal",
       "This proposal has been added through the script during deployment.");
-  const proposal = await daoGovernance.getProposal(0);
-  console.log(proposal);
 
   const variables = {
     daoId: '0',
