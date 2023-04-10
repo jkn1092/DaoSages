@@ -5,8 +5,45 @@ A DAO for auditing blockchain project with a transparent and automated process t
 ## Deployment
 https://dao-sages.vercel.app/
 
+DAOSage Contract : https://mumbai.polygonscan.com/address/0xf6446e926Fa3aa2282eC9c8D72C06D459FBF80F8
+DAOSageGovernance Contract : https://mumbai.polygonscan.com/address/0xca561fC618ad204734aD6B911DE1AE80c4a6D048
+
 ## Demo
 https://www.loom.com/share/dd42cfcc20d64a10b34e3b549e388a98
+
+## How to run locally
+
+#### Run Hardhat Node :
+```shell
+npx hardhat node
+```
+
+#### Run API server :
+```shell
+cd api
+npm install
+npm start
+```
+
+#### Deploy smart contracts :
+```shell
+cd front
+npm install
+npx hardhat run scripts/deploy.js --network localhost
+```
+
+#### Run client :
+```shell
+cd client
+npm install
+npx next start
+```
+
+#### Run unit testing with coverage :
+```shell
+npx hardhat coverage
+```
+
 
 ## Unit Test coverage with solidity-coverage
 ```shell
