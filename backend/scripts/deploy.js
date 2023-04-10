@@ -63,7 +63,7 @@ async function main() {
     }
   `;
 
-  axios.post('http://localhost:3000/graphql', {
+  axios.post('https://daosages.herokuapp.com/graphql', {
     query: mutation,
     variables: variables
   })
