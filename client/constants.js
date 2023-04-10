@@ -1,5 +1,5 @@
-export const contractDaoAddress = "0xC73873193556c965F19dae4eD1514BB6b62e2ac2"
-export const contractGovernanceAddress = "0x8faB79ef2Eda9283995c03B26503524ace2814D2"
+export const contractDaoAddress = "0x0CC93aB6659cdf95b6D6b4DeBBf99f1784354Ea0"
+export const contractGovernanceAddress = "0xEC3999f07876ce4c0d01C31D06A22D32bD4BEb57"
 export const abiDao = [
     {
         "inputs": [],
