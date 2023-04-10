@@ -4,6 +4,8 @@ A DAO for auditing blockchain project with a transparent and automated process t
 
 ## Deployment
 
+Note : Suite à des soucis techniques avec le RPC d'Alchemy, j'ai rapidement mis en place une config pour Goerli. La main branche utilise une configuration de Goerli avec Infura alors que la branche mumbai utilise une configuration de Mumbai avec Alchemy.
+
 https://dao-sages.vercel.app/ (En raison de problème technique avec le RPC d'Alchemy, ce lien pourrait éventuellement ne pas fonctionner.)
 https://dao-sages-goerli.vercel.app/
 
