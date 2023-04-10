@@ -55,7 +55,10 @@ export default function ProjectDetail() {
         try {
             const contract = new ethers.Contract(contractDaoAddress, abiDao, signer);
             let transaction = await contract.auditProject(projectId, audit);
-            transaction.wait();
+            await transaction.wait();
+
+            const result = await contract.getAudit(projectId);
+            setDaoAudit(ethers.BigNumber.from(result).toNumber());
 
             toast({
                 title: 'Congratulations',
@@ -73,7 +76,6 @@ export default function ProjectDetail() {
                 duration: 9000,
                 isClosable: true,
             })
-            console.log(e)
         }
     }
 

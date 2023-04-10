@@ -1,6 +1,4 @@
-import Head from 'next/head'
-import Layout from "@/components/Layout/Layout";
-import {useAccount, useSigner} from "wagmi";
+import { useSigner} from "wagmi";
 import {
     Button,
     Flex,
@@ -57,7 +55,6 @@ export default function ProjectForm() {
                     duration: 9000,
                     isClosable: true,
                 })
-                console.log(submitProjectResult.error);
             }
             else
             {

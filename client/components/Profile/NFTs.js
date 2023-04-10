@@ -232,7 +232,15 @@ const NFTs = () => {
         try {
             let amountInEther = '0.01'
             const contract = new ethers.Contract(contractDaoAddress, abiDao, signer)
-            await contract.mintFinder(address, {value: ethers.utils.parseEther(amountInEther)});
+            let transaction = await contract.mintFinder(address, {value: ethers.utils.parseEther(amountInEther)});
+            await transaction.wait();
+
+            const roles = await contract.getRoles();
+            if (roles.isFinder) {
+                const tokenURI = await contract.tokenFinderURI();
+                let response = await axios.get(tokenURI)
+                setIsFinder(response.data.image);
+            }
 
             toast({
                 title: 'Congratulations',
@@ -257,7 +265,15 @@ const NFTs = () => {
         try {
             let amountInEther = '0.02'
             const contract = new ethers.Contract(contractDaoAddress, abiDao, signer)
-            await contract.mintBrainer(address, {value: ethers.utils.parseEther(amountInEther)});
+            let transaction = await contract.mintBrainer(address, {value: ethers.utils.parseEther(amountInEther)});
+            await transaction.wait();
+
+            const roles = await contract.getRoles();
+            if (roles.isBrainer) {
+                const tokenURI = await contract.tokenBrainerURI();
+                let response = await axios.get(tokenURI)
+                setIsBrainer(response.data.image);
+            }
 
             toast({
                 title: 'Congratulations',

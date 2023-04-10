@@ -14,7 +14,6 @@ import {useState} from "react";
 import {ethers} from "ethers";
 import {abiGovernance, contractGovernanceAddress} from "@/constants";
 
-
 export default function ProposalForm() {
     const { data: signer } = useSigner();
     const toast = useToast();
@@ -25,7 +24,8 @@ export default function ProposalForm() {
     const submitNewProposal = async() => {
         try {
             const contract = new ethers.Contract(contractGovernanceAddress, abiGovernance, signer)
-            await contract.submitProposal(name, description);
+            let transaction = await contract.submitProposal(name, description);
+            await transaction.wait();
 
             toast({
                 title: 'Congratulations',
