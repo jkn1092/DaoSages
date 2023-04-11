@@ -1,15 +1,21 @@
-import {useAccount, useProvider, useSigner} from "wagmi";
+import {useAccount, useSigner} from "wagmi";
 import {useEffect, useState} from "react";
 import {ethers} from "ethers";
 import {abiDao, contractDaoAddress} from "@/constants";
 import {Box, Button, Center, Stack, Text, useColorModeValue, useToast} from "@chakra-ui/react";
 import Image from "next/image";
 import axios from "axios";
+import {useQuery} from "@apollo/client";
+import {REQUEST} from "@/services/graphql";
 
 const NFTs = () => {
     const { data: signer } = useSigner();
     const { address } = useAccount();
     const toast = useToast();
+
+    const getIsWise = useQuery(REQUEST.QUERY.ROLES.IS_WISE);
+    const getIsBrainer = useQuery(REQUEST.QUERY.ROLES.IS_BRAINER);
+    const getIsFinder = useQuery(REQUEST.QUERY.ROLES.IS_FINDER);
 
     const [isFinder, setIsFinder] = useState();
     const [isBrainer, setIsBrainer] = useState();
@@ -20,18 +26,17 @@ const NFTs = () => {
             if( signer )
             {
                 const contract = new ethers.Contract(contractDaoAddress, abiDao, signer);
-                const roles = await contract.getRoles();
-                if (roles.isFinder) {
+                if (getIsFinder.data?.isFinder) {
                     const tokenURI = await contract.tokenFinderURI();
                     let response = await axios.get(tokenURI)
                     setIsFinder(response.data.image);
                 }
-                if (roles.isBrainer) {
+                if (getIsBrainer.data?.isBrainer) {
                     const tokenURI = await contract.tokenBrainerURI();
                     let response = await axios.get(tokenURI)
                     setIsBrainer(response.data.image);
                 }
-                if (roles.isWise) {
+                if (getIsWise.data?.isWise) {
                     const tokenURI = await contract.tokenWiseURI();
                     let response = await axios.get(tokenURI)
                     setIsWise(response.data.image);
@@ -235,12 +240,9 @@ const NFTs = () => {
             let transaction = await contract.mintFinder(address, {value: ethers.utils.parseEther(amountInEther)});
             await transaction.wait();
 
-            const roles = await contract.getRoles();
-            if (roles.isFinder) {
-                const tokenURI = await contract.tokenFinderURI();
-                let response = await axios.get(tokenURI)
-                setIsFinder(response.data.image);
-            }
+            const tokenURI = await contract.tokenFinderURI();
+            let response = await axios.get(tokenURI)
+            setIsFinder(response.data.image);
 
             toast({
                 title: 'Congratulations',
@@ -268,12 +270,9 @@ const NFTs = () => {
             let transaction = await contract.mintBrainer(address, {value: ethers.utils.parseEther(amountInEther)});
             await transaction.wait();
 
-            const roles = await contract.getRoles();
-            if (roles.isBrainer) {
-                const tokenURI = await contract.tokenBrainerURI();
-                let response = await axios.get(tokenURI)
-                setIsBrainer(response.data.image);
-            }
+            const tokenURI = await contract.tokenBrainerURI();
+            let response = await axios.get(tokenURI)
+            setIsBrainer(response.data.image);
 
             toast({
                 title: 'Congratulations',

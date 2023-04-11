@@ -1,7 +1,6 @@
 import {ethers} from "ethers";
-import {abiDao, abiGovernance, contractDaoAddress, contractGovernanceAddress} from "@/constants";
+import { abiGovernance, contractGovernanceAddress} from "@/constants";
 import {useSearchParams} from "next/navigation";
-import Layout from "@/components/Layout/Layout";
 import {
     Box,
     Button, Container,
@@ -12,6 +11,8 @@ import {
 } from "@chakra-ui/react";
 import {useAccount, useProvider, useSigner} from "wagmi";
 import {useEffect, useState} from "react";
+import {useQuery} from "@apollo/client";
+import {REQUEST} from "@/services/graphql";
 
 
 export default function ProposalDetail() {
@@ -26,6 +27,9 @@ export default function ProposalDetail() {
     const [proposal, setProposal] = useState();
     const [voted, setVoted] = useState(false);
     const [hasRole, setHasRole] = useState(false);
+    const getIsWise = useQuery(REQUEST.QUERY.ROLES.IS_WISE);
+    const getIsBrainer = useQuery(REQUEST.QUERY.ROLES.IS_BRAINER);
+    const getIsFinder = useQuery(REQUEST.QUERY.ROLES.IS_FINDER);
     const [isValidated, setIsValidated] = useState(false);
 
     const submitWithdraw = async() => {
@@ -132,9 +136,7 @@ export default function ProposalDetail() {
     useEffect(() => {
         (async function() {
             if( isConnected ){
-                const contract = new ethers.Contract(contractDaoAddress, abiDao, signer);
-                const roles = await contract.getRoles();
-                if( roles.isFinder || roles.isBrainer || roles.isWise )
+                if( getIsWise.data?.isWise || getIsBrainer.data?.isBrainer || getIsFinder.data?.isFinder )
                     setHasRole(true);
             }
         })();

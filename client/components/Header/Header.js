@@ -1,32 +1,18 @@
 import { Flex, Text } from '@chakra-ui/react';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import Link from 'next/link';
-import {createStorage, useAccount, useProvider, useSigner} from "wagmi";
-import {useEffect, useState} from "react";
-import {ethers} from "ethers";
-import {abiDao, contractDaoAddress} from "@/constants";
+import {useAccount} from "wagmi";
+import {useQuery} from "@apollo/client";
+import {REQUEST} from "@/services/graphql";
 
 const Header = () => {
-    const { data: signer } = useSigner();
     const { isConnected } = useAccount();
-    const [isFinder, setIsFinder] = useState(false);
-    const [isBrainer, setIsBrainer] = useState(false);
-    const [isWise, setIsWise] = useState(false);
-
-    useEffect(() => {
-        (async function() {
-            if( signer ){
-                const contract = new ethers.Contract(contractDaoAddress, abiDao, signer);
-                const roles = await contract.getRoles();
-                setIsFinder(roles.isFinder);
-                setIsBrainer(roles.isBrainer);
-                setIsWise(roles.isWise);
-            }
-        })();
-    },[signer])
+    const getIsWise = useQuery(REQUEST.QUERY.ROLES.IS_WISE);
+    const getIsBrainer = useQuery(REQUEST.QUERY.ROLES.IS_BRAINER);
+    const getIsFinder = useQuery(REQUEST.QUERY.ROLES.IS_FINDER);
 
     const RoleMenu = () => {
-        if( isWise )
+        if( getIsWise.data?.isWise )
         {
             return(
                 <>
@@ -36,7 +22,7 @@ const Header = () => {
                 </>
             )
         }
-        else if( isFinder )
+        else if( getIsFinder.data?.isFinder )
         {
             return(
                 <>
@@ -46,7 +32,7 @@ const Header = () => {
                 </>
             )
         }
-        else if( isBrainer )
+        else if( getIsBrainer.data?.isBrainer )
         {
             return(
                 <>

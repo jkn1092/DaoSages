@@ -48,22 +48,22 @@ export const REQUEST = {
         ROLES: {
             GET_ADDRESS: gql`
                 query GetAddress {
-                    GetAddress @client
+                    getAddress @client
                 }
             `,
             IS_FINDER: gql`
                 query IsFinder {
-                    IsFinder @client
+                    isFinder @client
                 }
             `,
             IS_BRAINER: gql`
                 query IsBrainer {
-                    IsBrainer @client
+                    isBrainer @client
                 }
             `,
             IS_WISE: gql`
                 query IsWise {
-                    IsWise @client
+                    isWise @client
                 }
             `,
         }

@@ -1,26 +1,25 @@
 import Layout from "@/components/Layout/Layout";
 import ProjectForm from "@/components/Project/ProjectForm";
-import {useAccount, useSigner} from "wagmi";
+import {useAccount} from "wagmi";
 import {useEffect, useState} from "react";
-import {ethers} from "ethers";
-import {abiDao, contractDaoAddress} from "@/constants";
 import {Alert} from "@chakra-ui/react";
+import {useQuery} from "@apollo/client";
+import {REQUEST} from "@/services/graphql";
 
 export default function SubmitProject() {
-    const { data: signer } = useSigner();
     const { isConnected } = useAccount();
     const [hasRole, setHasRole] = useState(false);
+    const getIsWise = useQuery(REQUEST.QUERY.ROLES.IS_WISE);
+    const getIsFinder = useQuery(REQUEST.QUERY.ROLES.IS_FINDER);
 
     useEffect(() => {
         (async function() {
             if( isConnected ){
-                const contract = new ethers.Contract(contractDaoAddress, abiDao, signer);
-                const roles = await contract.getRoles();
-                if( roles.isFinder || roles.isWise )
+                if( getIsWise.data?.isWise || getIsFinder.data?.isFinder )
                     setHasRole(true);
             }
         })();
-    },[isConnected])
+    },[isConnected,getIsWise,getIsFinder])
 
     const ShowProjectForm = () => {
         if( hasRole ){

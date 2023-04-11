@@ -20,7 +20,7 @@ export const cache = new InMemoryCache({
 						return isWiseVar();
 					},
 				},
-				GetAccount: {
+				getAddress: {
 					read() {
 						return getAddressVar();
 					},

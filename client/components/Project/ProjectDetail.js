@@ -35,6 +35,8 @@ export default function ProjectDetail() {
     const [daoAudit, setDaoAudit] = useState();
     const [audit, setAudit] = useState();
     const [hasRole, setHasRole] = useState(false);
+    const getIsWise = useQuery(REQUEST.QUERY.ROLES.IS_WISE);
+    const getIsBrainer = useQuery(REQUEST.QUERY.ROLES.IS_BRAINER);
 
     const getProjectResult = useQuery(REQUEST.QUERY.PROJECT.GET_PROJECT_ID,{
         variables: {
@@ -102,13 +104,11 @@ export default function ProjectDetail() {
     useEffect(() => {
         (async function() {
             if( isConnected ){
-                const contract = new ethers.Contract(contractDaoAddress, abiDao, signer);
-                const roles = await contract.getRoles();
-                if( roles.isBrainer || roles.isWise )
+                if( getIsWise.data?.isWise || getIsBrainer.data?.isBrainer )
                     setHasRole(true);
             }
         })();
-    },[isConnected])
+    },[isConnected, getIsWise, getIsBrainer])
 
 
     const CoinGeckoInput = () => {

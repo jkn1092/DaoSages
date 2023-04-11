@@ -17,11 +17,9 @@ import {abiGovernance, contractGovernanceAddress} from "@/constants";
 import {useEffect, useState} from "react";
 import Link from "next/link";
 
-
 export default function ListProposals() {
     const provider = useProvider()
     const [proposals, setProposals] = useState();
-
 
     useEffect(() => {
         (async function() {
