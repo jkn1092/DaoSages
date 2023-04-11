@@ -26,15 +26,14 @@ export default function ProposalDetail() {
     const [proposal, setProposal] = useState();
     const [voted, setVoted] = useState(false);
     const [hasRole, setHasRole] = useState(false);
+    const [isValidated, setIsValidated] = useState(false);
 
     const submitWithdraw = async() => {
         try {
-            const contract = new ethers.Contract(contractGovernanceAddress, abiGovernance, signer)
-            contract.on("ProposalValidated", (to, amount, from) => {
-                console.log(to, amount, from);
-            });
+            const contract = new ethers.Contract(contractGovernanceAddress, abiGovernance, signer);
 
-            await contract.withdrawVote(proposalId);
+            let transaction = await contract.withdrawVote(proposalId);
+            await transaction.wait();
             setVoted(false);
 
             toast({
@@ -59,8 +58,14 @@ export default function ProposalDetail() {
     const submitVote = async() => {
         try {
             const contract = new ethers.Contract(contractGovernanceAddress, abiGovernance, signer)
-            await contract.submitVote(proposalId);
+
+            let transaction = await contract.submitVote(proposalId);
+            await transaction.wait();
             setVoted(true);
+
+            contract.on("ProposalValidated", (to, amount, from) => {
+                setIsValidated(true);
+            });
 
             toast({
                 title: 'Congratulations',
@@ -110,6 +115,7 @@ export default function ProposalDetail() {
                 const contract = new ethers.Contract(contractGovernanceAddress, abiGovernance, provider);
                 let proposalFetch = await contract.getProposal(proposalId);
                 setProposal(proposalFetch);
+                setIsValidated(proposalFetch.validated)
 
                 let hasVoted = false;
                 let eventFilter = contract.filters.VoteSubmitted(address, proposalId);
@@ -177,7 +183,7 @@ export default function ProposalDetail() {
                                             </Text>{' '}
                                             {proposal?.owner}
                                         </ListItem>
-                                        { proposal?.validated ?
+                                        { isValidated ?
                                             (
                                                 <ListItem>
                                                     <Text as={'span'} fontWeight={'bold'}>

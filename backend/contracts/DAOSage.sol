@@ -82,8 +82,9 @@ contract DAOSage is Ownable, ERC721URIStorage {
      * @param _to The address of the user to whom the token is to be minted
      */
     function mintFinder(address _to) external payable {
+        require(_to != address(0), 'address incorrect');
         require(!_exists(participants[_to].tokenFinder), 'Already minted');
-        require(msg.value >= 0.01 ether, 'insufficient eth');
+        require(msg.value == 0.01 ether, 'wrong amount of ether');
 
         _tokenIds.increment();
         uint newItemId = _tokenIds.current();
@@ -98,8 +99,9 @@ contract DAOSage is Ownable, ERC721URIStorage {
      * @param _to The address of the user to whom the token is to be minted
      */
     function mintBrainer(address _to) external payable{
+        require(_to != address(0), 'address incorrect');
         require(!_exists(participants[_to].tokenBrainer), 'Already minted');
-        require(msg.value >= 0.02 ether, 'insufficient eth');
+        require(msg.value == 0.02 ether, 'wrong amount of ether');
 
         _tokenIds.increment();
         uint newItemId = _tokenIds.current();
@@ -114,6 +116,7 @@ contract DAOSage is Ownable, ERC721URIStorage {
      * @param _to The address of the user to whom the token is to be minted
      */
     function mintWisemen(address _to) onlyOwner public {
+        require(_to != address(0), 'address incorrect');
         require(!_exists(participants[_to].tokenWisemen), 'Already minted');
 
         _tokenIds.increment();
@@ -235,6 +238,8 @@ contract DAOSage is Ownable, ERC721URIStorage {
      * @return weight uint containing the weight of the voter
      */
     function getVoteWeight(address _voter) external view returns(uint8 weight){
+        require(_voter != address(0), 'address incorrect');
+        require(isParticipant(_voter), 'not participant');
         if( _exists(participants[_voter].tokenWisemen) )
             weight = 4;
         else if( _exists(participants[_voter].tokenBrainer) )
@@ -248,8 +253,16 @@ contract DAOSage is Ownable, ERC721URIStorage {
      * @param _participant The address of the user.
      * @return boolean whether the user is a participant
      */
-    function isParticipant(address _participant) external view returns(bool){
+    function isParticipant(address _participant) public view returns(bool){
+        require(_participant != address(0), 'address incorrect');
         return(_exists(participants[_participant].tokenFinder) || _exists(participants[_participant].tokenBrainer) ||
         _exists(participants[_participant].tokenWisemen));
+    }
+
+    /**
+     * @dev Function to withdraw the contract balance.
+     */
+    function withdrawFunds() external onlyOwner{
+        payable(msg.sender).transfer(address(this).balance);
     }
 }

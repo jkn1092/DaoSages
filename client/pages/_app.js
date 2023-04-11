@@ -2,8 +2,9 @@ import '@/styles/globals.css'
 import '@rainbow-me/rainbowkit/styles.css';
 
 import {configureChains, createClient, WagmiConfig} from "wagmi";
-import { polygonMumbai } from 'wagmi/chains'
+import { polygonMumbai, goerli, hardhat } from 'wagmi/chains'
 import { alchemyProvider } from 'wagmi/providers/alchemy';
+import { infuraProvider } from 'wagmi/providers/infura'
 import { publicProvider } from 'wagmi/providers/public';
 import {getDefaultWallets , RainbowKitProvider} from "@rainbow-me/rainbowkit";
 import { ChakraProvider } from '@chakra-ui/react'
@@ -11,9 +12,10 @@ import {ApolloProvider} from "@apollo/client";
 import client from "@/apollo-client";
 
 const { chains, provider } = configureChains(
-    [polygonMumbai],
+    [goerli],
     [
-      alchemyProvider({ apiKey: process.env.ALCHEMY_ID }),
+        infuraProvider({ apiKey: process.env.INFURA_ID }),
+        alchemyProvider({ apiKey: process.env.ALCHEMY_ID }),
       publicProvider()
     ]
 );

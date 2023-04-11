@@ -1,5 +1,5 @@
-export const contractDaoAddress = "0x487B72D9De4182E4759C434d7838c0081984cF68"
-export const contractGovernanceAddress = "0x3653F2F4fba5D6C42e6848690fC5BbFb33Cac385"
+export const contractDaoAddress = "0x5f2dAB25123130071055C513dE3C8F61E5D2dA1C"
+export const contractGovernanceAddress = "0x0A58814cEA9140c5409360c4Cc769bfb91D79cEA"
 export const abiDao = [
     {
         "inputs": [],
@@ -428,35 +428,6 @@ export const abiDao = [
     {
         "inputs": [
             {
-                "internalType": "address",
-                "name": "",
-                "type": "address"
-            }
-        ],
-        "name": "participants",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "tokenFinder",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "tokenBrainer",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "tokenWisemen",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
                 "internalType": "uint256",
                 "name": "",
                 "type": "uint256"
@@ -699,6 +670,13 @@ export const abiDao = [
             }
         ],
         "name": "transferOwnership",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "withdrawFunds",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
