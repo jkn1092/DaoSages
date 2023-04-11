@@ -1,4 +1,4 @@
-import { Flex, Text } from '@chakra-ui/react';
+import { Flex } from '@chakra-ui/react';
 import Header from '../Header/Header';
 import Footer from '../Footer/Footer';
 import { useQuery} from "@apollo/client";
