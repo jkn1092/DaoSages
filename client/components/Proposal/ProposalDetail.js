@@ -1,5 +1,5 @@
 import {ethers} from "ethers";
-import { abiGovernance, contractGovernanceAddress} from "@/constants";
+import {abiDao, abiGovernance, contractDaoAddress, contractGovernanceAddress} from "@/constants";
 import {useSearchParams} from "next/navigation";
 import {
     Box,
@@ -13,16 +13,16 @@ import {useAccount, useProvider, useSigner} from "wagmi";
 import {useEffect, useState} from "react";
 import {useQuery} from "@apollo/client";
 import {REQUEST} from "@/services/graphql";
+import {rolesReactive} from "@/models/service";
 
 
 export default function ProposalDetail() {
     const searchParams = useSearchParams();
     let proposalId = searchParams.get('id');
 
-    const { isConnected } = useAccount();
     const provider = useProvider()
     const { data: signer } = useSigner();
-    const { address } = useAccount();
+    const { isConnected, address } = useAccount();
     const toast = useToast();
     const [proposal, setProposal] = useState();
     const [voted, setVoted] = useState(false);
@@ -30,6 +30,7 @@ export default function ProposalDetail() {
     const getIsWise = useQuery(REQUEST.QUERY.ROLES.IS_WISE);
     const getIsBrainer = useQuery(REQUEST.QUERY.ROLES.IS_BRAINER);
     const getIsFinder = useQuery(REQUEST.QUERY.ROLES.IS_FINDER);
+    const getAddressResult = useQuery(REQUEST.QUERY.ROLES.GET_ADDRESS);
     const [isValidated, setIsValidated] = useState(false);
 
     const submitWithdraw = async() => {
@@ -131,16 +132,31 @@ export default function ProposalDetail() {
                 setVoted(hasVoted);
             }
         })();
-    },[proposalId])
+    },[proposalId, address])
 
     useEffect(() => {
         (async function() {
             if( isConnected ){
-                if( getIsWise.data?.isWise || getIsBrainer.data?.isBrainer || getIsFinder.data?.isFinder )
-                    setHasRole(true);
+                if( signer != null && address !== getAddressResult?.data.getAddress ) {
+                    const contract = new ethers.Contract(contractDaoAddress, abiDao, signer);
+                    const roles = await contract.getRoles();
+
+                    await rolesReactive(address, roles.isFinder, roles.isBrainer, roles.isWise);
+                    if( roles.isWise || roles.isBrainer || roles.isFinder )
+                        setHasRole(true);
+                    else
+                        setHasRole(false);
+                }
+                else
+                {
+                    if( getIsWise.data?.isWise || getIsBrainer.data?.isBrainer || getIsFinder.data?.isFinder )
+                        setHasRole(true);
+                    else
+                        setHasRole(false);
+                }
             }
         })();
-    },[isConnected])
+    },[isConnected, signer, address])
 
     const gray = useColorModeValue('gray.900', 'gray.400');
     const yellow = useColorModeValue('yellow.500', 'yellow.300');

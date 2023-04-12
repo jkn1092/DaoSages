@@ -7,6 +7,7 @@ import Image from "next/image";
 import axios from "axios";
 import {useQuery} from "@apollo/client";
 import {REQUEST} from "@/services/graphql";
+import {rolesReactive} from "@/models/service";
 
 const NFTs = () => {
     const { data: signer } = useSigner();
@@ -16,6 +17,7 @@ const NFTs = () => {
     const getIsWise = useQuery(REQUEST.QUERY.ROLES.IS_WISE);
     const getIsBrainer = useQuery(REQUEST.QUERY.ROLES.IS_BRAINER);
     const getIsFinder = useQuery(REQUEST.QUERY.ROLES.IS_FINDER);
+    const getAddressResult = useQuery(REQUEST.QUERY.ROLES.GET_ADDRESS);
 
     const [isFinder, setIsFinder] = useState();
     const [isBrainer, setIsBrainer] = useState();
@@ -26,6 +28,12 @@ const NFTs = () => {
             if( signer )
             {
                 const contract = new ethers.Contract(contractDaoAddress, abiDao, signer);
+
+                if( address !== getAddressResult?.data.getAddress ) {
+                    const roles = await contract.getRoles();
+                    await rolesReactive(address, roles.isFinder, roles.isBrainer, roles.isWise);
+                }
+
                 if (getIsFinder.data?.isFinder) {
                     const tokenURI = await contract.tokenFinderURI();
                     let response = await axios.get(tokenURI)

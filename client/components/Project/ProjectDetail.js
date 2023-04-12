@@ -22,21 +22,22 @@ import {useQuery} from "@apollo/client";
 import {useAccount, useProvider, useSigner} from "wagmi";
 import {ethers} from "ethers";
 import {abiDao, contractDaoAddress} from "@/constants";
+import {rolesReactive} from "@/models/service";
 
 export default function ProjectDetail() {
     const searchParams = useSearchParams();
     let projectId = searchParams.get('id');
 
-    const { isConnected } = useAccount();
     const provider = useProvider()
     const { data: signer } = useSigner();
-    const { address } = useAccount();
+    const { address, isConnected } = useAccount();
     const toast = useToast();
     const [daoAudit, setDaoAudit] = useState();
     const [audit, setAudit] = useState();
     const [hasRole, setHasRole] = useState(false);
     const getIsWise = useQuery(REQUEST.QUERY.ROLES.IS_WISE);
     const getIsBrainer = useQuery(REQUEST.QUERY.ROLES.IS_BRAINER);
+    const getAddressResult = useQuery(REQUEST.QUERY.ROLES.GET_ADDRESS);
 
     const getProjectResult = useQuery(REQUEST.QUERY.PROJECT.GET_PROJECT_ID,{
         variables: {
@@ -99,16 +100,31 @@ export default function ProjectDetail() {
             }
 
         })();
-    },[projectId])
+    },[projectId, address])
 
     useEffect(() => {
         (async function() {
             if( isConnected ){
-                if( getIsWise.data?.isWise || getIsBrainer.data?.isBrainer )
-                    setHasRole(true);
+                if( signer != null && address !== getAddressResult?.data.getAddress ) {
+                    const contract = new ethers.Contract(contractDaoAddress, abiDao, signer);
+                    const roles = await contract.getRoles();
+
+                    await rolesReactive(address, roles.isFinder, roles.isBrainer, roles.isWise);
+                    if( roles.isWise || roles.isBrainer )
+                        setHasRole(true);
+                    else
+                        setHasRole(false )
+                }
+                else
+                {
+                    if( getIsWise.data?.isWise || getIsBrainer.data?.isBrainer )
+                        setHasRole(true);
+                    else
+                        setHasRole(false )
+                }
             }
         })();
-    },[isConnected, getIsWise, getIsBrainer])
+    },[isConnected, address, signer])
 
 
     const CoinGeckoInput = () => {

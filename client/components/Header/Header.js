@@ -1,15 +1,32 @@
 import { Flex, Text } from '@chakra-ui/react';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import Link from 'next/link';
-import {useAccount} from "wagmi";
+import {useAccount, useSigner} from "wagmi";
 import {useQuery} from "@apollo/client";
 import {REQUEST} from "@/services/graphql";
+import {useEffect} from "react";
+import {ethers} from "ethers";
+import {abiDao, contractDaoAddress} from "@/constants";
+import {rolesReactive} from "@/models/service";
 
 const Header = () => {
-    const { isConnected } = useAccount();
+    const { data: signer } = useSigner();
+    const { isConnected, address } = useAccount();
     const getIsWise = useQuery(REQUEST.QUERY.ROLES.IS_WISE);
     const getIsBrainer = useQuery(REQUEST.QUERY.ROLES.IS_BRAINER);
     const getIsFinder = useQuery(REQUEST.QUERY.ROLES.IS_FINDER);
+    const getAddressResult = useQuery(REQUEST.QUERY.ROLES.GET_ADDRESS);
+
+    useEffect(() => {
+        (async function() {
+            if( signer != null && address !== getAddressResult?.data.getAddress ) {
+                const contract = new ethers.Contract(contractDaoAddress, abiDao, signer);
+                const roles = await contract.getRoles();
+
+                await rolesReactive(address, roles.isFinder, roles.isBrainer, roles.isWise);
+            }
+        })();
+    },[signer, address])
 
     const RoleMenu = () => {
         if( getIsWise.data?.isWise )
