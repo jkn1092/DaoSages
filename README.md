@@ -2,6 +2,8 @@
 
 A DAO for auditing blockchain project with a transparent and automated process that verifies the accuracy and integrity of the projects transactions and data.
 
+Note : La branche "contexts" contient la gestion de contexte qui a été ajouté le Mardi 11 Avril. Cela évite de faire des appels vers le contrat pour récupérer les rôles de l'adresse connectée. 
+
 ## Deployment
 
 Note : Suite à des soucis techniques avec le RPC d'Alchemy, j'ai rapidement mis en place une config pour Goerli. La main branche utilise une configuration de Goerli avec Infura alors que la branche mumbai utilise une configuration de Mumbai avec Alchemy.
