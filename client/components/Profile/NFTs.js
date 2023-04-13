@@ -36,18 +36,24 @@ const NFTs = () => {
 
                 if (getIsFinder.data?.isFinder) {
                     const tokenURI = await contract.tokenFinderURI();
-                    let response = await axios.get(tokenURI)
-                    setIsFinder(response.data.image);
+                    axios.get(tokenURI)
+                        .then( res => {
+                            setIsFinder(res.data.image);
+                        });
                 }
                 if (getIsBrainer.data?.isBrainer) {
                     const tokenURI = await contract.tokenBrainerURI();
-                    let response = await axios.get(tokenURI)
-                    setIsBrainer(response.data.image);
+                    axios.get(tokenURI)
+                        .then( res => {
+                            setIsBrainer(res.data.image);
+                        });
                 }
                 if (getIsWise.data?.isWise) {
                     const tokenURI = await contract.tokenWiseURI();
-                    let response = await axios.get(tokenURI)
-                    setIsWise(response.data.image);
+                    axios.get(tokenURI)
+                        .then( res => {
+                            setIsWise(res.data.image);
+                            });
                 }
             }
         })();
